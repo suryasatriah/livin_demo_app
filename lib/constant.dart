@@ -21,4 +21,4 @@ const kTitleMediumTextStyle = TextStyle(
   color: Colors.black,
 );
 const kLiveChatEndpoint =
-    "https://mandiri.3dolphins.ai:9443/webchat/livechat-livin.html?name=Hirdian&email=h.surakusumah@gmail.com&triggerMenu=Hi";
+    "https://mandiri.3dolphins.ai:9443/webchat/livechat-livin.html?name=Reza&email=reza@gmail.com&triggerMenu=financial%20insight";

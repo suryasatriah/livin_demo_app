@@ -16,6 +16,7 @@ class DolphinLivinDemo extends StatelessWidget {
       designSize: const Size(375, 812), // Adjust based on your design
       builder: (context, child) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           builder: (context, widget) {
             ScreenUtil.ensureScreenSize(); // Optional, ensures the screen size is ready
             return widget!;

@@ -62,7 +62,7 @@ class _HomeMenuState extends State<HomeMenu> {
         'onTap': null,
       },
       'assets/images/ic_menu_investasi.png': {
-        'label': 'Investasi',
+        'label': 'Financial Insights',
         'onTap': navigateToWebChat,
       }
     };
@@ -141,19 +141,17 @@ class _HomeMenuState extends State<HomeMenu> {
             ),
           ),
           Container(
-            height: 40.r,
+            height: 45.r,
             padding: EdgeInsets.fromLTRB(0, 8.r, 0, 0),
-            child: Center(
-              child: Text(
-                label,
-                textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w300),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .copyWith(fontWeight: FontWeight.w300),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

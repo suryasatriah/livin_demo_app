@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       .textTheme
                                       .headlineSmall),
                               TextSpan(
-                                text: 'SURYA!',
+                                text: 'REZA!',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headlineSmall!
