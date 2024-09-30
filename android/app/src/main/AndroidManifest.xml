@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for internet access -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Required for accessing the network -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:label="dolphin_livin_demo"
         android:name="${applicationName}"

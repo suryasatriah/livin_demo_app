@@ -13,6 +13,8 @@ dependencies:
   logger: ^2.4.0
   webview_flutter: ^4.9.0
   flutter_screenutil: ^5.9.3
+  webview_flutter_android: ^3.16.7
+  webview_flutter_wkwebview: ^3.15.0
 
 dev_dependencies:
   flutter_test:
