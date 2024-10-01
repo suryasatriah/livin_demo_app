@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -58,9 +61,27 @@ class _WebViewScreenState extends State<WebViewScreen> {
               return NavigationDecision.prevent;
             }
 
-            if (request.url.contains('netlify')) {
-              if (await canLaunchUrl(Uri.parse(request.url))) {
-                await launchUrl(Uri.parse(request.url));
+            if (request.url.contains('sukha')) {
+              if (Platform.isIOS && mounted) {
+                var isNavigating = false;
+                if (!isNavigating) {
+                  isNavigating = true;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SukhaScreen()),
+                  ).then((_) {
+                    isNavigating = false;
+                  });
+                }
+
+                return NavigationDecision.prevent;
+              } else if (await canLaunchUrl(Uri.parse(request.url))) {
+                await launchUrl(Uri.parse(request.url),
+                    mode: LaunchMode.externalApplication);
+
+                return NavigationDecision.prevent;
+              } else {
                 return NavigationDecision.prevent;
               }
             }
