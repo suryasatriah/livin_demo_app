@@ -20,5 +20,7 @@ const kLabelMediumTextStyle = TextStyle(
 const kTitleMediumTextStyle = TextStyle(
   color: Colors.black,
 );
-const kLiveChatEndpoint =
-    "https://mandiri.3dolphins.ai:9443/webchat/livechat-livin.html?name=Reza&email=reza@gmail.com&triggerMenu=financial%20insight";
+// const kLiveChatEndpoint =
+//     "https://mandiri.3dolphins.ai:9443/webchat/livechat-livin.html?name=Reza&email=reza@gmail.com&triggerMenu=financial%20insight";
+
+const kLiveChatEndpoint = "https://mandiri.3dolphins.ai:9443/livechat-mandiri-livin/livechat-livin.html";
