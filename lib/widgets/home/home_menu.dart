@@ -1,4 +1,5 @@
 import 'package:dolphin_livin_demo/constant.dart';
+import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
 import 'package:dolphin_livin_demo/screens/web_view_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,7 +44,7 @@ class _HomeMenuState extends State<HomeMenu> {
       },
       'assets/images/ic_menu_sukha.png': {
         'label': 'Sukha',
-        'onTap': null,
+        'onTap': navigateToSukha,
       },
       'assets/images/ic_menu_transfer_valas.png': {
         'label': 'Transfer Valas',
@@ -73,6 +74,13 @@ class _HomeMenuState extends State<HomeMenu> {
         context,
         MaterialPageRoute(
             builder: (context) => const WebViewScreen(url: kLiveChatEndpoint)));
+  }
+
+  void navigateToSukha() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const SukhaScreen()));
   }
 
   @override
