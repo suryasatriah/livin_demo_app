@@ -41,6 +41,7 @@ class DolphinLivinDemo extends StatelessWidget {
             return widget!;
           },
           theme: ThemeData().copyWith(
+            scaffoldBackgroundColor: Colors.white,
             textTheme: const TextTheme().copyWith(
               headlineSmall: kHeadlineSmallTextStyle,
               bodyLarge: kBodyLargeTextStyle,
