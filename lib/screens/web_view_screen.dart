@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
+import 'package:dolphin_livin_demo/widgets/webView/web_view_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -102,11 +103,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-          preferredSize: Size.fromHeight(16.r),
-          child: AppBar(
-            automaticallyImplyLeading: false,
-          )),
-      body: WebViewWidget(controller: webViewController),
+        preferredSize: Size.fromHeight(57.r),
+        child: const WebViewAppBar(),
+      ),
+      body: Container(
+          color: Colors.white,
+          padding: EdgeInsets.only(top: 4.r),
+          child: WebViewWidget(controller: webViewController)),
     );
   }
 }
