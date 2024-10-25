@@ -79,13 +79,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
                           MaterialPageRoute(
                               builder: (context) => TransferScreen(
                                     destinationName: Uri.parse(request.url)
-                                            .queryParameters['dest'] ??
+                                            .queryParameters['name'] ??
                                         "10024520240810",
                                     transferAmount: Uri.parse(request.url)
                                             .queryParameters['amt'] ??
                                         "0",
                                     transferDestination: Uri.parse(request.url)
-                                            .queryParameters['name'] ??
+                                            .queryParameters['dest'] ??
                                         "Andriansyah Hakim",
                                   ))).then((_) {
                           isNavigating = false;
