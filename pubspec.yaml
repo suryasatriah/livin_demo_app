@@ -1,7 +1,7 @@
 name: dolphin_livin_demo
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0+6
+version: 1.0.0+7
 
 environment:
   sdk: ^3.5.3
@@ -35,3 +35,4 @@ flutter_launcher_icons:
   image_path: "assets/images/ic_livin.png"
   android: "launcher_icon"
   ios: true
+  remove_alpha_ios: true
