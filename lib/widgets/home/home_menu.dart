@@ -1,5 +1,6 @@
 import 'package:dolphin_livin_demo/constant.dart';
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
+import 'package:dolphin_livin_demo/screens/transfer/transfer_screen.dart';
 import 'package:dolphin_livin_demo/screens/web_view_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,7 +29,7 @@ class _HomeMenuState extends State<HomeMenu> {
     menuItems = {
       'assets/images/ic_menu_transfer.png': {
         'label': 'Transfer Rupiah',
-        'onTap': null,
+        'onTap': navigateToTransfer,
       },
       'assets/images/ic_menu_va.png': {
         'label': 'Bayar/VA',
@@ -78,9 +79,12 @@ class _HomeMenuState extends State<HomeMenu> {
 
   void navigateToSukha() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => const SukhaScreen()));
+        context, MaterialPageRoute(builder: (context) => const SukhaScreen()));
+  }
+
+  void navigateToTransfer() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const TransferScreen()));
   }
 
   @override

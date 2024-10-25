@@ -1,6 +1,7 @@
 import 'package:dolphin_livin_demo/constant.dart';
 import 'package:dolphin_livin_demo/screens/home_screen.dart';
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
+import 'package:dolphin_livin_demo/screens/transfer/transfer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -14,10 +15,21 @@ final router = GoRouter(
     GoRoute(
       path: '/',
       builder: (_, __) => const HomeScreen(),
+     // builder: (_, __) => const TransferSuccessScreen(),
       routes: [
         GoRoute(
           path: 'sukha',
           builder: (_, __) => const SukhaScreen(),
+        ),
+        GoRoute(
+          path: 'transfer',
+          builder: (context, state) => TransferScreen(
+            transferAmount: state.uri.queryParameters['amt'] ?? "0",
+            transferDestination:
+                state.uri.queryParameters['dest'] ?? "10024520240810",
+            destinationName:
+                state.uri.queryParameters['name'] ?? "Andriansyah Hakim",
+          ),
         ),
       ],
     ),
@@ -48,6 +60,7 @@ class DolphinLivinDemo extends StatelessWidget {
               bodyMedium: kBodyMediumTextStyle,
               labelMedium: kLabelMediumTextStyle,
               titleMedium: kTitleMediumTextStyle,
+              titleLarge: kTitleLargeTextStyle,
             ),
           ),
         );

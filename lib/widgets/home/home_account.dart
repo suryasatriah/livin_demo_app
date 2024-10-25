@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeAccount extends StatelessWidget {
-  final kCardHeight = 100;
-
   const HomeAccount({super.key});
 
   @override
@@ -26,6 +24,20 @@ class HomeAccount extends StatelessWidget {
 
   Widget _buildAccountCard(
       String accountName, String accountNumber, BuildContext context) {
+    return AccountCard(accountNumber: accountNumber,);
+  }
+}
+
+class AccountCard extends StatelessWidget {
+  const AccountCard({
+    super.key,
+    required this.accountNumber,
+  });
+  final String accountNumber;
+  final kCardHeight = 100;
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         Column(
