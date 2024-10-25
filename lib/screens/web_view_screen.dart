@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
+import 'package:dolphin_livin_demo/screens/transfer/transfer_screen.dart';
 import 'package:dolphin_livin_demo/widgets/webView/web_view_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -62,18 +63,33 @@ class _WebViewScreenState extends State<WebViewScreen> {
               return NavigationDecision.prevent;
             }
 
-            if (request.url.contains('sukha')) {
+            if (request.url.contains('sukha') ||
+                request.url.contains('transfer')) {
               if (Platform.isIOS && mounted) {
                 var isNavigating = false;
                 if (!isNavigating) {
                   isNavigating = true;
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SukhaScreen()),
-                  ).then((_) {
-                    isNavigating = false;
-                  });
+                  request.url.contains('sukha')
+                      ? Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SukhaScreen()))
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TransferScreen(
+                                    destinationName: Uri.parse(request.url)
+                                            .queryParameters['dest'] ??
+                                        "10024520240810",
+                                    transferAmount: Uri.parse(request.url)
+                                            .queryParameters['amt'] ??
+                                        "0",
+                                    transferDestination: Uri.parse(request.url)
+                                            .queryParameters['name'] ??
+                                        "Andriansyah Hakim",
+                                  ))).then((_) {
+                          isNavigating = false;
+                        });
                 }
 
                 return NavigationDecision.prevent;
