@@ -1,10 +1,11 @@
 import 'package:dolphin_livin_demo/constant.dart';
-import 'package:dolphin_livin_demo/screens/home_screen.dart';
+import 'package:dolphin_livin_demo/screens/pln/pln_pra_screen.dart';
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
 import 'package:dolphin_livin_demo/screens/transfer/transfer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const DolphinLivinDemo());
@@ -14,8 +15,8 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (_, __) => const HomeScreen(),
-     // builder: (_, __) => const TransferSuccessScreen(),
+      // builder: (_, __) => const HomeScreen(),
+      builder: (_, __) => const PlnPraScreen(),
       routes: [
         GoRoute(
           path: 'sukha',
@@ -29,6 +30,12 @@ final router = GoRouter(
                 state.uri.queryParameters['dest'] ?? "10024520240810",
             destinationName:
                 state.uri.queryParameters['name'] ?? "Andriansyah Hakim",
+          ),
+        ),
+        GoRoute(
+          path: 'plnpra',
+          builder: (context, state) => PlnPraScreen(
+            destination: state.uri.queryParameters['dest'],
           ),
         ),
       ],
@@ -54,11 +61,13 @@ class DolphinLivinDemo extends StatelessWidget {
           },
           theme: ThemeData().copyWith(
             scaffoldBackgroundColor: Colors.white,
-            textTheme: const TextTheme().copyWith(
+            textTheme: GoogleFonts.interTextTheme(Theme.of(context).textTheme)
+                .copyWith(
               headlineSmall: kHeadlineSmallTextStyle,
               bodyLarge: kBodyLargeTextStyle,
               bodyMedium: kBodyMediumTextStyle,
               labelMedium: kLabelMediumTextStyle,
+              labelLarge: kLabelLargeTextStyle,
               titleMedium: kTitleMediumTextStyle,
               titleLarge: kTitleLargeTextStyle,
             ),
