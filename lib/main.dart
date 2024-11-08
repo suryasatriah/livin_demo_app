@@ -1,4 +1,5 @@
 import 'package:dolphin_livin_demo/constant.dart';
+import 'package:dolphin_livin_demo/screens/home_screen.dart';
 import 'package:dolphin_livin_demo/screens/pln/pln_pra_screen.dart';
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
 import 'package:dolphin_livin_demo/screens/transfer/transfer_screen.dart';
@@ -15,8 +16,8 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      // builder: (_, __) => const HomeScreen(),
-      builder: (_, __) => const PlnPraScreen(),
+      builder: (_, __) => const HomeScreen(),
+     // builder: (_, __) => const PlnPraScreen(),
       routes: [
         GoRoute(
           path: 'sukha',
