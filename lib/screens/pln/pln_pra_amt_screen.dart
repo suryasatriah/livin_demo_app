@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PlnPraAmtScreen extends StatelessWidget {
+  final String? amount;
   final String destination;
 
-  const PlnPraAmtScreen({super.key, required this.destination});
+  const PlnPraAmtScreen({super.key, this.amount, required this.destination});
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +28,17 @@ class PlnPraAmtScreen extends StatelessWidget {
                 picture: Image.asset("assets/images/ic_pln.png"),
               ),
             ),
+            if (amount != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("IDR $amount",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(fontWeight: FontWeight.w500))
+                ],
+              ),
             Image.asset("assets/images/img_pln_amount.jpg"),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 8.r, horizontal: 16.r),

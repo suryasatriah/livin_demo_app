@@ -1,6 +1,6 @@
 import 'package:dolphin_livin_demo/constant.dart';
 import 'package:dolphin_livin_demo/screens/web_view_screen.dart';
-import 'package:dolphin_livin_demo/widgets/home/search_widget.dart';
+import 'package:dolphin_livin_demo/widgets/explorer/explorer_view.dart';
 import 'package:dolphin_livin_demo/widgets/image_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       barrierColor: Colors.black.withOpacity(0.5),
       builder: (BuildContext context) {
-        return const SearchWidget();
+        return const ExplorerView();
       },
     );
   }

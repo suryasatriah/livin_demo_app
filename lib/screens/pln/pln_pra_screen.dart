@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PlnPraScreen extends StatefulWidget {
+  final String? amount;
   final String? destination;
 
-  const PlnPraScreen({super.key, this.destination});
+  const PlnPraScreen({super.key, this.amount, this.destination});
 
   @override
   State<PlnPraScreen> createState() => _PlnPraScreenState();
@@ -86,6 +87,7 @@ class _PlnPraScreenState extends State<PlnPraScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => PlnPraAmtScreen(
+                                        amount: widget.amount,
                                         destination: controller.text)))
                             : null),
                   )

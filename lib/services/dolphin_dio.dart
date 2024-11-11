@@ -7,7 +7,7 @@ class DolphinDio {
   static final DolphinDio instance = DolphinDio._privateConstructor();
   static final dolphinLogger = DolphinLogger.instance;
   static final _baseOptions = BaseOptions(
-    connectTimeout: const Duration(seconds: 5),
+    connectTimeout: const Duration(seconds: 15),
     receiveTimeout: const Duration(minutes: 1),
   );
 
@@ -45,10 +45,14 @@ class DolphinDio {
     }
   }
 
-  Future<Response> post(String url,
-      {String? token,
-      Map<String, dynamic>? queryParameters,
-      Map<String, dynamic>? data}) async {
+  Future<Response> post(
+    String url, {
+    Map<String, dynamic>? data,
+    Map<String, dynamic>? queryParameters,
+    ResponseType? responseType,
+    String? token,
+  }) async {
+    if (responseType != null) _baseOptions.responseType = responseType;
     if (token != null) _baseOptions.headers["authorization"] = "Bearer $token";
 
     var dio = buildDio();

@@ -1,11 +1,26 @@
 import 'package:dolphin_livin_demo/screens/home_screen.dart';
 import 'package:dolphin_livin_demo/widgets/dolphin_app_bar.dart';
 import 'package:dolphin_livin_demo/widgets/dolphin_button.dart';
+import 'package:dolphin_livin_demo/widgets/explorer/explorer_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
-class PlnPraCompleteScreen extends StatelessWidget {
+class PlnPraCompleteScreen extends StatefulWidget {
   const PlnPraCompleteScreen({super.key});
+
+  @override
+  State<PlnPraCompleteScreen> createState() => _PlnPraCompleteScreenState();
+}
+
+class _PlnPraCompleteScreenState extends State<PlnPraCompleteScreen> {
+  late ExplorerProvider explorerProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    explorerProvider = Provider.of<ExplorerProvider>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +49,16 @@ class PlnPraCompleteScreen extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.r),
-              child: DolphinButton.outlinedButton1(
-                context,
-                label: "Kembali ke halaman utama",
-                onPressed: () => Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  (route) => true,
-                ),
-              ),
+              child: DolphinButton.outlinedButton1(context,
+                  label: "Kembali ke halaman utama",
+                  onPressed: () => {
+                        explorerProvider.clearData(),
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const HomeScreen()),
+                            (route) => true)
+                      }),
             ),
           ],
         ),

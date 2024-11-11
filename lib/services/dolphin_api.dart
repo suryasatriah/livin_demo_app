@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
 import 'package:dolphin_livin_demo/constant.dart';
 import 'package:dolphin_livin_demo/model/result.dart';
 import 'package:dolphin_livin_demo/services/dolphin_dio.dart';
@@ -10,6 +12,8 @@ import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 class DolphinApi {
   static const String kEndpointPredictUi =
       "/dolphin/apiv1/generative/predict/ui";
+  static const String kEndpointPredictStream =
+      "/dolphin/apiv1/generative/predict/stream";
   static const String kEndpointSuggestion =
       "/dolphin/apiv1/graph/workflow/b74092844998a190470ad5424697947d/WF/node-1731039934911/webhook";
 
@@ -19,6 +23,10 @@ class DolphinApi {
   static final DolphinApi instance = DolphinApi._privateConstructor();
 
   DolphinApi._privateConstructor();
+
+  // Generate Url using port
+  generateUrl({required int port, String? endpoint}) =>
+      "$kBaseUrl:$port$endpoint";
 
   String generateRandomString() {
     // Get the current date and time
@@ -67,31 +75,105 @@ class DolphinApi {
     return null;
   }
 
-  Future<List<String>?> getSuggestions() async {
+  Future<List<String>> getSuggestions() async {
     try {
       var url = kNonGenerativeUrl + kEndpointSuggestion;
-
       var response = await dolphinDio.post(url);
       dolphinLogger.i(response.data);
 
-      var answer = response.data['data']['value']['answer'];
+      // Ensure response data is parsed as JSON if it’s a string
+      var responseData = response.data;
+      if (responseData is String) {
+        responseData = jsonDecode(responseData);
+      }
 
-      // Replace single quotes with double quotes to make it valid JSON
-      var result = answer.replaceAll("'", "\"");
+      // Access the required fields after verifying responseData is a Map
+      if (responseData is Map &&
+          responseData.containsKey('data') &&
+          responseData['data']['value'].containsKey('answer')) {
+        var answer = responseData['data']['value']['answer'];
 
-      // Parse the result JSON
-      var resultJson = jsonDecode(result);
+        // Replace single quotes with double quotes to make it valid JSON
+        var result = answer.replaceAll("'", "\"");
 
-      // Extract the 'suggestion' list and convert it to List<String>
-      List<String> stringList = List<String>.from(resultJson['suggestion']);
+        // Parse the result JSON
+        var resultJson = jsonDecode(result);
 
-      // Print to verify
-      print(stringList);
+        // Extract the 'suggestion' list and convert it to List<String>
+        List<String> stringList = List<String>.from(resultJson['suggestion']);
 
-      return stringList;
+        return stringList;
+      } else {
+        dolphinLogger.e("Unexpected response format");
+      }
     } catch (e, stack) {
       dolphinLogger.e(e, stackTrace: stack);
     }
-    return null;
+    return [];
+  }
+
+  Stream<String> fetchStream(
+    String question, {
+    void Function()? onStart,
+    void Function(String?)? onComplete,
+  }) {
+    if (onStart != null) onStart();
+
+    StreamController<String> controller = StreamController<String>();
+    StringBuffer paragraph = StringBuffer();
+
+    var questionPayload = {
+      "question": [question]
+    };
+    var generatedPayload = {
+      "sessionId": generateRandomString(),
+      "ticketNumber": generateRandomString(),
+    };
+    var payload = kBasicPredictPayload
+      ..addAll(questionPayload)
+      ..addAll(generatedPayload);
+    dolphinLogger.i(payload);
+
+    dolphinDio
+        .post(
+      generateUrl(
+        port: 7183,
+        endpoint: kEndpointPredictStream,
+      ),
+      data: payload,
+      responseType: ResponseType.stream,
+    )
+        .then(
+      (response) async {
+        try {
+          await for (var data in response.data.stream) {
+            var char = String.fromCharCodes(data);
+            paragraph.write(char);
+            controller.add(paragraph.toString().trim());
+          }
+
+          dolphinLogger.i("paragraph: $paragraph");
+          
+        } catch (e) {
+          dolphinLogger.e(e);
+          controller.addError(e);
+        } finally {
+          controller.close();
+          if (onComplete != null) onComplete(paragraph.toString().trim());
+        }
+      },
+    ).catchError(
+      (error) {
+        dolphinLogger.e(error);
+        controller.addError(error);
+        controller.close();
+      },
+    ).onError((error, stackTrace) {
+      dolphinLogger.e(error, stackTrace: stackTrace);
+      controller.addError(error ?? 'error');
+      controller.close();
+    });
+
+    return controller.stream;
   }
 }
