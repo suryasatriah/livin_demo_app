@@ -5,13 +5,19 @@ import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
 import 'package:dolphin_livin_demo/screens/transfer/transfer_screen.dart';
 import 'package:dolphin_livin_demo/widgets/explorer/explorer_answer_generator_provider.dart';
 import 'package:dolphin_livin_demo/widgets/explorer/explorer_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
   runApp(const DolphinLivinDemo());
 }
 
@@ -41,7 +47,7 @@ final router = GoRouter(
           builder: (context, state) => PlnPraScreen(
             amount: state.uri.queryParameters['amt'],
             destination: state.uri.queryParameters['dest'],
-        ),
+          ),
         ),
       ],
     ),

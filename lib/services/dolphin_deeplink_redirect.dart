@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dolphin_livin_demo/screens/pln/pln_pra_screen.dart';
+import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
+import 'package:dolphin_livin_demo/screens/transfer/transfer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -33,6 +35,20 @@ mixin DolphinDeepLinkNavigator {
           ),
         ),
       );
+    } else if (uri.path.contains('sukha')) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const SukhaScreen()));
+    } else if (uri.path.contains("transfer")) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TransferScreen(
+                    destinationName:
+                        uri.queryParameters['name'] ?? "10024520240810",
+                    transferAmount: uri.queryParameters['amt'] ?? "0",
+                    transferDestination:
+                        uri.queryParameters['dest'] ?? "Andriansyah Hakim",
+                  ))).then((_) {});
     }
   }
 

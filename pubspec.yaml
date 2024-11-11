@@ -41,6 +41,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/home/
+    - google_fonts/
 
 flutter_launcher_icons:
   image_path: "assets/images/ic_livin.png"
