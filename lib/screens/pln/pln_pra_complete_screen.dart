@@ -3,7 +3,6 @@ import 'package:dolphin_livin_demo/widgets/dolphin_button.dart';
 import 'package:dolphin_livin_demo/widgets/explorer/explorer_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class PlnPraCompleteScreen extends StatefulWidget {
@@ -51,10 +50,14 @@ class _PlnPraCompleteScreenState extends State<PlnPraCompleteScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 16.r),
                   child: DolphinButton.outlinedButton1(context,
                       label: "Kembali ke halaman utama",
-                      onPressed: () => {
-                            explorerProvider.clearData(),
-                            GoRouter.of(context).go('/'),
-                          }))
+                      // onPressed: () => {
+                      //   explorerProvider.clearData(),
+                      //   GoRouter.of(context).go('/'),
+                      // },
+                      onPressed: () {
+                    explorerProvider.clearData();
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  }))
             ]),
       ),
     );

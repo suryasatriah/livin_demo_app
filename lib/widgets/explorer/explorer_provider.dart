@@ -29,7 +29,8 @@ class ExplorerProvider extends ChangeNotifier {
 
   String? populateAnswerJson(String answerJson) {
     try {
-      var parsedJson = jsonDecode(answerJson.replaceAll("'", "\""));
+      var sanitizedJson = answerJson.replaceAll("\n", "\\n").replaceAll("'", "\"");
+      var parsedJson = jsonDecode(sanitizedJson);
 
       if (parsedJson is Map<String, dynamic>) {
         result = Result.fromJson(parsedJson);

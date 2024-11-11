@@ -12,7 +12,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class ExplorerView extends StatefulWidget {
-
   const ExplorerView({
     super.key,
   });
@@ -64,7 +63,8 @@ class _ExplorerViewState extends State<ExplorerView>
   }
 
   doSubmitSearch(ExplorerProvider explorerProvider) async {
-    if (!explorerProvider.loading) explorerProvider.submitSearch();
+    if (!explorerProvider.loading && controller.text.length > 3)
+      explorerProvider.submitSearch();
   }
 
   @override
@@ -178,10 +178,16 @@ class _ExplorerViewState extends State<ExplorerView>
                               ),
                             ),
                             suffixIcon: IconButton(
-                                onPressed: explorerProviderWidget.submitted ? () => {setState(() {
-                                  controller.text = '';explorerProviderWidget.clearData();
-                                  explorerProviderWidget.populateSuggestion();
-                                })} : null,
+                                onPressed: explorerProviderWidget.submitted
+                                    ? () => {
+                                          setState(() {
+                                            controller.text = '';
+                                            explorerProviderWidget.clearData();
+                                            explorerProviderWidget
+                                                .populateSuggestion();
+                                          })
+                                        }
+                                    : null,
                                 icon: const Icon(Icons.clear)),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16.r),
@@ -220,6 +226,22 @@ class _ExplorerViewState extends State<ExplorerView>
                     ),
                   ),
                 ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 8.r),
+                          child: IconButton.filled(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(Icons.close)),
+                        ),
+                      ],
+                    )
+                  ],
+                )
               ],
             ),
           ),
