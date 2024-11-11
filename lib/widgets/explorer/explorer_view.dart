@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class ExplorerView extends StatefulWidget {
+
   const ExplorerView({
     super.key,
   });
@@ -177,7 +178,10 @@ class _ExplorerViewState extends State<ExplorerView>
                               ),
                             ),
                             suffixIcon: IconButton(
-                                onPressed: () => controller.text = '',
+                                onPressed: explorerProviderWidget.submitted ? () => {setState(() {
+                                  controller.text = '';explorerProviderWidget.clearData();
+                                  explorerProviderWidget.populateSuggestion();
+                                })} : null,
                                 icon: const Icon(Icons.clear)),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16.r),

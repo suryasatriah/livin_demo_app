@@ -50,7 +50,6 @@ class ExplorerProvider extends ChangeNotifier {
     result = null;
     button = null;
     suggestions = [];
-    loading = false;
   }
 
   // Start Loading
@@ -67,6 +66,7 @@ class ExplorerProvider extends ChangeNotifier {
     } else {
       submitted = true;
     }
+
     notifyListeners();
   }
 }

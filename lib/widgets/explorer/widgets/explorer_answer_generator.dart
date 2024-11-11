@@ -67,7 +67,7 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
   }
 
   Widget generateAnswerWidget(String? data) {
-    var text = processIncomingData(data);
+    var text = processIncomingData(data?.replaceAll('\\n', '\n'));
 
     if (text != null) {
       return SingleChildScrollView(
@@ -101,10 +101,12 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
                         ),
                         contentPadding: EdgeInsets.zero,
                         trailing: IconButton(
-                          onPressed: () => navigateDeeplink(
+                          onPressed: () => {
+                            Navigator.pop(context),
+                            navigateDeeplink(
                             context,
                             url: explorerProvider.button?.link ?? '',
-                          ),
+                          )},
                           icon: const Icon(
                             Icons.arrow_outward,
                             color: Colors.white,
