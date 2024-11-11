@@ -18,7 +18,7 @@ class ExplorerProvider extends ChangeNotifier {
   populateSuggestion() async {
     try {
       loading = true;
-      suggestions = await dolphinApi.getSuggestions();
+      suggestions = await dolphinApi.getSuggestionsNative();
       loading = false;
       notifyListeners();
     } catch (e) {
@@ -60,5 +60,13 @@ class ExplorerProvider extends ChangeNotifier {
   stopLoading() => {loading = false, notifyListeners()};
 
   // Submit Search
-  submitSearch() => {submitted = true, notifyListeners()};
+  submitSearch() {
+    if (submitted) {
+      result = null;
+      button = null;
+    } else {
+      submitted = true;
+    }
+    notifyListeners();
+  }
 }

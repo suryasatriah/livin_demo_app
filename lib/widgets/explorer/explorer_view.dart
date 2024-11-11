@@ -107,12 +107,11 @@ class _ExplorerViewState extends State<ExplorerView>
     }
 
     buildAnswer() {
-      return Column(
-        children: [
-          ExplorerAnswerGenerator(
-            question: controller.text,
-          ),
-        ],
+      return Selector<ExplorerProvider, Result?>(
+        selector: (context, explorerProvider) => explorerProvider.result,
+        builder: (context, explorerProvider, child) => ExplorerAnswerGenerator(
+          question: controller.text,
+        ),
       );
     }
 
@@ -152,7 +151,8 @@ class _ExplorerViewState extends State<ExplorerView>
               children: [
                 GestureDetector(
                   onTap: () => {
-                    if (!Provider.of<ExplorerProvider>(context).loading)
+                    if (!Provider.of<ExplorerProvider>(context, listen: false)
+                        .loading)
                       Navigator.pop(context)
                   },
                 ),
@@ -176,6 +176,9 @@ class _ExplorerViewState extends State<ExplorerView>
                                 height: 8.r,
                               ),
                             ),
+                            suffixIcon: IconButton(
+                                onPressed: () => controller.text = '',
+                                icon: const Icon(Icons.clear)),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16.r),
                               borderSide: BorderSide(

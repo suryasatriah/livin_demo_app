@@ -27,12 +27,20 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
     super.initState();
     explorerProvider = Provider.of<ExplorerProvider>(context, listen: false);
     _stream = DolphinApi.instance.fetchStream(widget.question);
-       
+  }
+
+  @override
+  void didUpdateWidget(covariant ExplorerAnswerGenerator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if the question has changed; if so, recreate the stream
+    if (oldWidget.question != widget.question) {
+      _stream = DolphinApi.instance.fetchStream(widget.question);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<String>(
       stream: _stream,
       builder: (context, snapshot) {
         Widget displayText;
@@ -67,32 +75,25 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
         child: Column(
           children: [
             MarkdownBody(
-                data: text,
-                styleSheet: MarkdownStyleSheet(
-                    p: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w400,
-                        ))),
-            // Text(
-            //   text,
-            //   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            //         fontWeight: FontWeight.w400,
-            //       ),
-            // ),
+              data: text,
+              styleSheet: MarkdownStyleSheet(
+                p: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
+              ),
+            ),
             explorerProvider.button != null
                 ? Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical:
-                                8.0), // Changed to a fixed value; ensure 8.r if `flutter_screenutil` is initialized
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Divider(
                           color: Colors.white.withOpacity(0.2),
                         ),
                       ),
                       ListTile(
                         title: Text(
-                          explorerProvider.button?.label ??
-                              'More', // Null-safe operator
+                          explorerProvider.button?.label ?? 'More',
                           style:
                               Theme.of(context).textTheme.labelLarge?.copyWith(
                                     fontWeight: FontWeight.w400,
@@ -102,8 +103,7 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
                         trailing: IconButton(
                           onPressed: () => navigateDeeplink(
                             context,
-                            url: explorerProvider.button?.link ??
-                                '', // Null-safe operator
+                            url: explorerProvider.button?.link ?? '',
                           ),
                           icon: const Icon(
                             Icons.arrow_outward,
@@ -126,8 +126,7 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
     if (data == null) return "Answer not available";
 
     if (data.contains("{")) {
-      return Provider.of<ExplorerProvider>(context, listen: false)
-          .populateAnswerJson(data);
+      return explorerProvider.populateAnswerJson(data);
     } else {
       return Utils.decodeUtf8(data);
     }

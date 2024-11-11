@@ -112,6 +112,45 @@ class DolphinApi {
     return [];
   }
 
+  Future<List<String>> getSuggestionsNative() async {
+    try {
+      Dio dio = Dio();
+
+      var url = kNonGenerativeUrl + kEndpointSuggestion;
+      var response = await dio.post(url);
+      dolphinLogger.i(response.data);
+
+      // Ensure response data is parsed as JSON if it’s a string
+      var responseData = response.data;
+      if (responseData is String) {
+        responseData = jsonDecode(responseData);
+      }
+
+      // Access the required fields after verifying responseData is a Map
+      if (responseData is Map &&
+          responseData.containsKey('data') &&
+          responseData['data']['value'].containsKey('answer')) {
+        var answer = responseData['data']['value']['answer'];
+
+        // Replace single quotes with double quotes to make it valid JSON
+        var result = answer.replaceAll("'", "\"");
+
+        // Parse the result JSON
+        var resultJson = jsonDecode(result);
+
+        // Extract the 'suggestion' list and convert it to List<String>
+        List<String> stringList = List<String>.from(resultJson['suggestion']);
+
+        return stringList;
+      } else {
+        dolphinLogger.e("Unexpected response format");
+      }
+    } catch (e, stack) {
+      dolphinLogger.e(e, stackTrace: stack);
+    }
+    return [];
+  }
+
   Stream<String> fetchStream(
     String question, {
     void Function()? onStart,
@@ -153,7 +192,6 @@ class DolphinApi {
           }
 
           dolphinLogger.i("paragraph: $paragraph");
-          
         } catch (e) {
           dolphinLogger.e(e);
           controller.addError(e);

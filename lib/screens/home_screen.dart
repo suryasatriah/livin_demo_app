@@ -18,7 +18,11 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       barrierColor: Colors.black.withOpacity(0.5),
       builder: (BuildContext context) {
-        return const ExplorerView();
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return const ExplorerView();
+          },
+        );
       },
     );
   }
