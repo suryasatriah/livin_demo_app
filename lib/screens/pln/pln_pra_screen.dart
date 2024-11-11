@@ -58,6 +58,10 @@ class _PlnPraScreenState extends State<PlnPraScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
                         controller: controller,
+                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                            color: Colors.black,
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.w400),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16.r),
@@ -65,11 +69,11 @@ class _PlnPraScreenState extends State<PlnPraScreen> {
                                   const BorderSide(color: Colors.black)),
                           suffixIcon: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: IconButton.filled(
+                            child: IconButton(
                                 onPressed: () => setState(() {
                                       controller.text = '';
                                     }),
-                                color: Colors.white,
+                                color: Colors.black,
                                 padding: EdgeInsets.zero,
                                 icon: const Icon(Icons.clear_outlined)),
                           ),

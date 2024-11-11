@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dolphin_livin_demo/model/button.dart';
 import 'package:dolphin_livin_demo/model/result.dart';
 import 'package:dolphin_livin_demo/services/dolphin_api.dart';
+import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 import 'package:flutter/material.dart';
 
 class ExplorerProvider extends ChangeNotifier {
@@ -28,7 +29,8 @@ class ExplorerProvider extends ChangeNotifier {
 
   String? populateAnswerJson(String answerJson) {
     try {
-      final parsedJson = jsonDecode(answerJson.replaceAll("'", "\""));
+      var parsedJson = jsonDecode(answerJson.replaceAll("'", "\""));
+
       if (parsedJson is Map<String, dynamic>) {
         result = Result.fromJson(parsedJson);
         if (result!.button != null) {
@@ -38,7 +40,7 @@ class ExplorerProvider extends ChangeNotifier {
         return result!.title!;
       }
     } catch (e) {
-      //
+      DolphinLogger.instance.e(e);
     }
 
     return null;

@@ -80,6 +80,12 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
                 p: Theme.of(context).textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w400,
                     ),
+                a: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
+                listBullet: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
               ),
             ),
             explorerProvider.button != null
@@ -104,9 +110,10 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
                           onPressed: () => {
                             Navigator.pop(context),
                             navigateDeeplink(
-                            context,
-                            url: explorerProvider.button?.link ?? '',
-                          )},
+                              context,
+                              url: explorerProvider.button?.link ?? '',
+                            )
+                          },
                           icon: const Icon(
                             Icons.arrow_outward,
                             color: Colors.white,

@@ -4,6 +4,7 @@ import 'package:dolphin_livin_demo/widgets/dolphin_button.dart';
 import 'package:dolphin_livin_demo/widgets/dolphin_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class PlnPraAmtScreen extends StatelessWidget {
   final String? amount;
@@ -13,6 +14,7 @@ class PlnPraAmtScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final NumberFormat occY = NumberFormat("#,##0.00", "en_US");
     return Scaffold(
       appBar: DolphinAppBar.appBar1(),
       body: SingleChildScrollView(
@@ -32,11 +34,9 @@ class PlnPraAmtScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("IDR $amount",
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge!
-                          .copyWith(fontWeight: FontWeight.w500))
+                  Text("IDR ${occY.format(double.tryParse(amount!))}",
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          fontSize: 32.sp, fontWeight: FontWeight.w500))
                 ],
               ),
             Image.asset("assets/images/img_pln_amount.jpg"),
