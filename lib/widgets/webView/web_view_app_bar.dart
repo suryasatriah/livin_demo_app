@@ -13,7 +13,7 @@ class WebViewAppBar extends StatelessWidget {
       shadowColor: Colors.black26,
       leading: Padding(
         padding: EdgeInsets.all(8.r),
-        child: Image.asset("assets/images/ic_mita.png"),
+        child: Image.asset("assets/images/ic_bella.png"),
       ),
       title: const Text(
         "BELLA",
