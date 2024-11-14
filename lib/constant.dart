@@ -48,7 +48,7 @@ const kTitleLargeTextStyle = TextStyle(
 
 const kBaseUrl = "https://mandiri.3dolphins.ai";
 const kLiveChatEndpoint =
-    "https://mandiri.3dolphins.ai:9443/livechat-mandiri-livin/livechat-livin.html";
+    "https://mandiri.3dolphins.ai:9443/livechat-mandiri-livin/livechat-livin2.html";
 
 const kGenerativeUrl = "https://mandiri.3dolphins.ai:7182";
 const kNonGenerativeUrl = "https://mandiri.3dolphins.ai:9443";

@@ -4,7 +4,7 @@
     <!-- Required for accessing the network -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
-        android:label="dolphin_livin_demo"
+        android:label="XYZ Bank"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

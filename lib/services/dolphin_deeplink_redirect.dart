@@ -14,7 +14,7 @@ mixin DolphinDeepLinkNavigator {
     try {
       final uri = Uri.parse(url);
 
-      if (Platform.isIOS && context.mounted) {
+      if ((Platform.isIOS || Platform.isAndroid) && context.mounted) {
         _handleIOSDeeplink(context, uri);
       } else {
         await _launchExternalDeeplink(uri);

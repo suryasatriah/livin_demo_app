@@ -65,7 +65,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
             if (request.url.contains('sukha') ||
                 request.url.contains('transfer')) {
-              if (Platform.isIOS && mounted) {
+              if ((Platform.isIOS || Platform.isAndroid) && mounted) {
                 var isNavigating = false;
                 if (!isNavigating) {
                   isNavigating = true;

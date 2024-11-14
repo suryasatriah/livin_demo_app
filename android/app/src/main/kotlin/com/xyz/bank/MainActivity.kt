@@ -1,4 +1,4 @@
-package com.imi.dolphin.livin.demo.dolphin_livin_demo
+package com.xyz.bank
 
 import io.flutter.embedding.android.FlutterActivity
 
