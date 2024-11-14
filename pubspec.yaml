@@ -41,6 +41,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/home/
+    - assets/images/home_xyz/
     - google_fonts/
 
 flutter_launcher_icons:

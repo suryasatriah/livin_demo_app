@@ -1,6 +1,6 @@
 import 'package:dolphin_livin_demo/services/dolphin_api.dart';
 import 'package:dolphin_livin_demo/services/dolphin_deeplink_redirect.dart';
-import 'package:dolphin_livin_demo/utils/utils.dart';
+import 'package:dolphin_livin_demo/utils/util.dart';
 import 'package:dolphin_livin_demo/widgets/explorer/explorer_provider.dart';
 import 'package:dolphin_livin_demo/widgets/explorer/widgets/explorer_loading.dart';
 import 'package:flutter/material.dart';
@@ -137,7 +137,7 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
     if (data.contains("{")) {
       return explorerProvider.populateAnswerJson(data);
     } else {
-      return Utils.decodeUtf8(data);
+      return Util.decodeUtf8(data);
     }
   }
 }

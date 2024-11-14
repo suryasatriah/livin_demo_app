@@ -1,4 +1,4 @@
-import 'package:dolphin_livin_demo/screens/home_screen.dart';
+import 'package:dolphin_livin_demo/screens/home_xyz/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -33,7 +33,7 @@ class _TransferSuccessScreenState extends State<TransferSuccessScreen> {
                    onPressed: () => Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const HomeScreen())),
+                          builder: (context) => const HomeView())),
                   icon: const Icon(Icons.cancel))
             ],
           )),

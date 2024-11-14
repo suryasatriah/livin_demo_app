@@ -16,7 +16,7 @@ class WebViewAppBar extends StatelessWidget {
         child: Image.asset("assets/images/ic_mita.png"),
       ),
       title: const Text(
-        "MITA",
+        "BELLA",
         style: TextStyle(
           fontWeight: FontWeight.w500,
           color: Color(0xff3E3E3E),

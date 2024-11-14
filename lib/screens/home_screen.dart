@@ -53,12 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               Row(
                                 children: [
                                   ImageButton(
-                                    asset:
+                                    name:
                                         "assets/images/home/ic_home_search.png",
                                     onTap: () => showFullScreenDialog(context),
                                   ),
                                   ImageButton(
-                                      asset:
+                                      name:
                                           "assets/images/home/ic_home_livechat.png",
                                       onTap: () => Navigator.push(
                                           context,
@@ -68,13 +68,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       url:
                                                           kLiveChatEndpoint)))),
                                   const ImageButton(
-                                      asset:
+                                      name:
                                           "assets/images/home/ic_home_setting.png"),
                                   const ImageButton(
-                                      asset:
+                                      name:
                                           "assets/images/home/ic_home_gear.png"),
                                   const ImageButton(
-                                      asset:
+                                      name:
                                           "assets/images/home/ic_home_quit.png"),
                                 ],
                               )

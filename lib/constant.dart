@@ -1,8 +1,18 @@
+import 'package:dolphin_livin_demo/model/account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 const kButtonColor = 0xff007dfe;
 const kHeadlineTextColor = Color(0xff163a88);
+
+const Color kOrca300 = Color(0xffA9AAAB);
+
+final Account kAccount = Account(
+  id: "001",
+  name: "Sonny Hastomo",
+  number: 102180192013,
+  balance: 1500000,
+);
 
 final kHeadlineSmallTextStyle = TextStyle(
   color: kHeadlineTextColor,
