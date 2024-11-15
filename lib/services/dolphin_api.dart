@@ -171,14 +171,14 @@ class DolphinApi {
     var payload = kBasicPredictPayload
       ..addAll(questionPayload)
       ..addAll(generatedPayload);
+
+    var url = generateUrl(port: 7183, endpoint: kEndpointPredictStream);
     dolphinLogger.i(payload);
+    dolphinLogger.i(url);
 
     dolphinDio
         .post(
-      generateUrl(
-        port: 7183,
-        endpoint: kEndpointPredictStream,
-      ),
+      url,
       data: payload,
       responseType: ResponseType.stream,
     )
