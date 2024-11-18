@@ -124,7 +124,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
       ),
       body: Container(
           color: Colors.white,
-          padding: EdgeInsets.only(top: 4.r),
+          padding: EdgeInsets.fromLTRB(0, 4.r, 0, 8.r),
           child: WebViewWidget(controller: webViewController)),
     );
   }
