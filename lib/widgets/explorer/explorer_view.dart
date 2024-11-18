@@ -63,8 +63,7 @@ class _ExplorerViewState extends State<ExplorerView>
   }
 
   doSubmitSearch(ExplorerProvider explorerProvider) async {
-    if (!explorerProvider.loading && controller.text.length > 3)
-      explorerProvider.submitSearch();
+    if (!explorerProvider.loading && controller.text.length > 3) explorerProvider.submitSearch();
   }
 
   @override

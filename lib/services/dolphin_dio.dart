@@ -13,11 +13,9 @@ class DolphinDio {
   );
 
   DolphinDio._privateConstructor();
-
   Dio buildDio() {
-    final dio = Dio(_baseOptions);
-    dio..interceptors.add(DolphinDioInterceptor(dio: dio));
-    return dio;
+    return Dio(_baseOptions)
+      ..interceptors.add(DolphinDioInterceptor(dio: Dio(_baseOptions)));
   }
 
   Future<Response> get(String url,
