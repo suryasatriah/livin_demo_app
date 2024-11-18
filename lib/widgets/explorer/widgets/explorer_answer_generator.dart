@@ -52,7 +52,10 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
           case ConnectionState.active:
           case ConnectionState.done:
             if (snapshot.hasError) {
-              displayText = const Text('Error');
+              displayText = Text('System currently under maintenance.',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ));
             } else {
               displayText = generateAnswerWidget(snapshot.data);
             }
