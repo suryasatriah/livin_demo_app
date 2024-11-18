@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:dolphin_livin_demo/services/dolphin_dio_interceptor.dart';
 import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 
 class DolphinDio {
@@ -15,6 +16,7 @@ class DolphinDio {
 
   Dio buildDio() {
     final dio = Dio(_baseOptions);
+    dio..interceptors.add(DolphinDioInterceptor(dio: dio));
     return dio;
   }
 
