@@ -107,10 +107,16 @@ class _ExplorerViewState extends State<ExplorerView>
     }
 
     buildAnswer() {
-      return Selector<ExplorerProvider, Result?>(
-        selector: (context, explorerProvider) => explorerProvider.result,
-        builder: (context, explorerProvider, child) => ExplorerAnswerGenerator(
-          question: controller.text,
+      return Expanded(
+        child: Column(
+          children: [
+            Selector<ExplorerProvider, Result?>(
+              selector: (context, explorerProvider) => explorerProvider.result,
+              builder: (context, explorerProvider, child) => ExplorerAnswerGenerator(
+                question: controller.text,
+              ),
+            ),
+          ],
         ),
       );
     }
