@@ -50,6 +50,7 @@ class ExplorerProvider extends ChangeNotifier {
   // Clear data
   clearData() {
     submitted = false;
+    loading = false;
     result = null;
     button = null;
     suggestions = [];
