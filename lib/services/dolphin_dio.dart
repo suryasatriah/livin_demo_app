@@ -11,11 +11,14 @@ class DolphinDio {
     receiveTimeout: const Duration(minutes: 1),
   );
 
-  DolphinDio._privateConstructor();
-  Dio buildDio() {
-    return Dio(_baseOptions);
-      // ..interceptors.add(DolphinDioInterceptor(dio: Dio(_baseOptions)));
-  }
+  final Dio _dio;
+
+  DolphinDio._privateConstructor() : _dio = Dio(_baseOptions);
+
+  // Dio buildDio() {
+  //   return _dio;
+  //     // ..interceptors.add(DolphinDioInterceptor(dio: Dio(_baseOptions)));
+  // }
 
   Future<Response> get(String url,
       {String? token,
@@ -23,7 +26,7 @@ class DolphinDio {
       Map<String, dynamic>? data}) async {
     if (token != null) _baseOptions.headers["authorization"] = "Bearer $token";
 
-    var dio = buildDio();
+    var dio = _dio;
 
     try {
       var response = await dio.get(
@@ -40,7 +43,7 @@ class DolphinDio {
     } catch (e) {
       rethrow;
     } finally {
-      dio.close();
+      // dio.close();
     }
   }
 
@@ -54,7 +57,7 @@ class DolphinDio {
     if (responseType != null) _baseOptions.responseType = responseType;
     if (token != null) _baseOptions.headers["authorization"] = "Bearer $token";
 
-    var dio = buildDio();
+    var dio = _dio;
 
     try {
       return await dio.post(
@@ -68,7 +71,7 @@ class DolphinDio {
     } catch (e) {
       rethrow;
     } finally {
-      dio.close();
+      // dio.close();
     }
   }
 
@@ -78,7 +81,7 @@ class DolphinDio {
       Map<String, dynamic>? data}) async {
     if (token != null) _baseOptions.headers["authorization"] = "Bearer $token";
 
-    var dio = buildDio();
+    var dio = _dio;
 
     try {
       return await dio.put(
@@ -92,7 +95,7 @@ class DolphinDio {
     } catch (e) {
       rethrow;
     } finally {
-      dio.close();
+      // dio.close();
     }
   }
 
@@ -102,7 +105,7 @@ class DolphinDio {
       Map<String, dynamic>? data}) async {
     if (token != null) _baseOptions.headers["authorization"] = "Bearer $token";
 
-    var dio = buildDio();
+    var dio = _dio;
 
     try {
       return await dio.delete(
@@ -116,7 +119,7 @@ class DolphinDio {
     } catch (e) {
       rethrow;
     } finally {
-      dio.close();
+      // dio.close();
     }
   }
 
