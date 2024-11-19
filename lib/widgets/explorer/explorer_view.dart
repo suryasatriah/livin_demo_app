@@ -215,7 +215,7 @@ class _ExplorerViewState extends State<ExplorerView>
                               .labelLarge!
                               .copyWith(
                                   fontWeight: FontWeight.w400,
-                                  color: Colors.white.withOpacity(0.8)),
+                                  color: Colors.white.withOpacity(0.6)),
                         ),
                         focusNode: focusNode,
                         onFieldSubmitted: (value) =>
