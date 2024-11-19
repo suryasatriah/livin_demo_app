@@ -1,7 +1,7 @@
 name: dolphin_livin_demo
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0+15
+version: 1.0.0+17
 
 environment:
   sdk: ^3.5.3
@@ -29,6 +29,7 @@ dependencies:
   provider: ^6.1.2
   fluttertoast: ^8.2.8
   flutter_markdown: ^0.7.4+1
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
