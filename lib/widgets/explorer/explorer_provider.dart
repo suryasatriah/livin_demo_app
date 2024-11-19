@@ -23,6 +23,7 @@ class ExplorerProvider extends ChangeNotifier {
       loading = false;
       notifyListeners();
     } catch (e) {
+      loading = false;
       rethrow;
     }
   }
