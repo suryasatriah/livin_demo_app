@@ -1,4 +1,5 @@
 import 'package:dolphin_livin_demo/screens/transfer/transfer_success_screen.dart';
+import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 import 'package:dolphin_livin_demo/widgets/home/home_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +29,13 @@ class _TransferScreenState extends State<TransferScreen> {
   void initState() {
     super.initState();
     textEditingController = TextEditingController();
-    textEditingController.text = widget.transferAmount;
+    try {
+      textEditingController.text = NumberFormat("#,##0.00", "en_US").format(double.tryParse(widget.transferAmount));
+    } catch (e) {
+      DolphinLogger.instance.e(e);
+      textEditingController.text = widget.transferAmount;
+    }
+    
     focusNode = FocusNode();
     focusNode.requestFocus();
   }
@@ -169,7 +176,7 @@ class _TransferScreenState extends State<TransferScreen> {
                                 }
 
                                 // Format the integer with commas
-                                NumberFormat formatter = NumberFormat('#,##0');
+                                NumberFormat formatter = NumberFormat("#,##0.00", "en_US");
                                 String formattedValue = formatter.format(value);
 
                                 // Return the formatted value as a new TextEditingValue
