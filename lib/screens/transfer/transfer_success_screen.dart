@@ -105,7 +105,7 @@ class _TransferSuccessScreenState extends State<TransferSuccessScreen> {
                             .copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        "Dari REZA PRATAMA",
+                        "Dari SONNY HASTOMO",
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium!

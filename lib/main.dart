@@ -2,7 +2,7 @@ import 'package:dolphin_livin_demo/constant.dart';
 import 'package:dolphin_livin_demo/screens/home_screen.dart';
 import 'package:dolphin_livin_demo/screens/pln/pln_pra_screen.dart';
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
-import 'package:dolphin_livin_demo/screens/transfer/transfer_screen.dart';
+import 'package:dolphin_livin_demo/screens/transfer/transfer_amt_view.dart';
 import 'package:dolphin_livin_demo/widgets/explorer/explorer_answer_generator_provider.dart';
 import 'package:dolphin_livin_demo/widgets/explorer/explorer_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -26,7 +26,6 @@ final router = GoRouter(
     GoRoute(
       path: '/',
       builder: (_, __) => const HomeScreen(),
-      // builder: (_, __) => const PlnPraScreen(),
       routes: [
         GoRoute(
           path: 'sukha',
@@ -34,9 +33,9 @@ final router = GoRouter(
         ),
         GoRoute(
           path: 'transfer',
-          builder: (context, state) => TransferScreen(
-            transferAmount: state.uri.queryParameters['amt'] ?? "0",
-            transferDestination:
+          builder: (context, state) => TransferAmtView(
+            amount: state.uri.queryParameters['amt'] ?? "0",
+            destination:
                 state.uri.queryParameters['dest'] ?? "10024520240810",
             destinationName:
                 state.uri.queryParameters['name'] ?? "Andriansyah Hakim",

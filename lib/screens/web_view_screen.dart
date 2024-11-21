@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
-import 'package:dolphin_livin_demo/screens/transfer/transfer_screen.dart';
+import 'package:dolphin_livin_demo/screens/transfer/transfer_amt_view.dart';
+import 'package:dolphin_livin_demo/screens/transfer/transfer_view.dart';
 import 'package:dolphin_livin_demo/widgets/webView/web_view_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -58,56 +59,71 @@ class _WebViewScreenState extends State<WebViewScreen> {
           onPageFinished: (String url) {},
           onHttpError: (HttpResponseError error) {},
           onWebResourceError: (WebResourceError error) {},
-          onNavigationRequest: (NavigationRequest request) async {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              return NavigationDecision.prevent;
-            }
-
-            if (request.url.contains('sukha') ||
-                request.url.contains('transfer')) {
-              if (Platform.isIOS && mounted) {
-                var isNavigating = false;
-                if (!isNavigating) {
-                  isNavigating = true;
-                  request.url.contains('sukha')
-                      ? Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SukhaScreen()))
-                      : Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TransferScreen(
-                                    destinationName: Uri.parse(request.url)
-                                            .queryParameters['name'] ??
-                                        "10024520240810",
-                                    transferAmount: Uri.parse(request.url)
-                                            .queryParameters['amt'] ??
-                                        "0",
-                                    transferDestination: Uri.parse(request.url)
-                                            .queryParameters['dest'] ??
-                                        "Andriansyah Hakim",
-                                  ))).then((_) {
-                          isNavigating = false;
-                        });
-                }
-
-                return NavigationDecision.prevent;
-              } else if (await canLaunchUrl(Uri.parse(request.url))) {
-                await launchUrl(Uri.parse(request.url),
-                    mode: LaunchMode.externalApplication);
-
-                return NavigationDecision.prevent;
-              } else {
-                return NavigationDecision.prevent;
-              }
-            }
-
-            return NavigationDecision.navigate;
-          },
+          onNavigationRequest: (NavigationRequest request) =>
+              handleNavigationRequest(context, request, mounted),
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
+  }
+
+  Future<NavigationDecision> handleNavigationRequest(
+      BuildContext context, NavigationRequest request, bool mounted) async {
+    if (request.url.startsWith('https://www.youtube.com/')) {
+      return NavigationDecision.prevent;
+    }
+
+    if (request.url.contains('sukha') || request.url.contains('transfer')) {
+      if ((Platform.isIOS || Platform.isAndroid) && mounted) {
+        var isNavigating = false;
+        if (!isNavigating) {
+          isNavigating = true;
+          if (request.url.contains('sukha')) {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const SukhaScreen()));
+          } else if (request.url.contains('transfer') &&
+              Uri.parse(request.url).queryParameters['name'] != null) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TransferAmtView(
+                          destinationName:
+                              Uri.parse(request.url).queryParameters['name'] ??
+                                  "10024520240810",
+                          amount:
+                              Uri.parse(request.url).queryParameters['amt'] ??
+                                  "0",
+                          destination:
+                              Uri.parse(request.url).queryParameters['dest'] ??
+                                  "Andriansyah Hakim",
+                        ))).then((_) {
+              isNavigating = false;
+            });
+          } else {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TransferView(
+                          amount:
+                              Uri.parse(request.url).queryParameters['amt'] ??
+                                  "0",
+                        ))).then((_) {
+              isNavigating = false;
+            });
+          }
+        }
+
+        return NavigationDecision.prevent;
+      } else if (await canLaunchUrl(Uri.parse(request.url))) {
+        await launchUrl(Uri.parse(request.url),
+            mode: LaunchMode.externalApplication);
+
+        return NavigationDecision.prevent;
+      } else {
+        return NavigationDecision.prevent;
+      }
+    }
+
+    return NavigationDecision.navigate;
   }
 
   @override

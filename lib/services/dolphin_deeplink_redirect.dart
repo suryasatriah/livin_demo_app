@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:dolphin_livin_demo/screens/pln/pln_pra_screen.dart';
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
-import 'package:dolphin_livin_demo/screens/transfer/transfer_screen.dart';
+import 'package:dolphin_livin_demo/screens/transfer/transfer_amt_view.dart';
+import 'package:dolphin_livin_demo/screens/transfer/transfer_view.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,16 +40,25 @@ mixin DolphinDeepLinkNavigator {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const SukhaScreen()));
     } else if (uri.path.contains("transfer")) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => TransferScreen(
-                    destinationName:
-                        uri.queryParameters['name'] ?? "10024520240810",
-                    transferAmount: uri.queryParameters['amt'] ?? "0",
-                    transferDestination:
-                        uri.queryParameters['dest'] ?? "Andriansyah Hakim",
-                  ))).then((_) {});
+      if (uri.queryParameters['name'] != null) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TransferView(
+                      amount: uri.queryParameters['amt'] ?? "0",
+                    ))).then((_) {});
+      } else {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TransferAmtView(
+                      destinationName:
+                          uri.queryParameters['name'] ?? "10024520240810",
+                      amount: uri.queryParameters['amt'] ?? "0",
+                      destination:
+                          uri.queryParameters['dest'] ?? "Andriansyah Hakim",
+                    ))).then((_) {});
+      }
     }
   }
 
