@@ -175,10 +175,7 @@ class DolphinApi {
 
     dolphinDio
         .post(
-      generateUrl(
-        port: 7183,
-        endpoint: kEndpointPredictStream,
-      ),
+        kGenerativeUrl + kEndpointPredictStream,
       data: payload,
       responseType: ResponseType.stream,
     )

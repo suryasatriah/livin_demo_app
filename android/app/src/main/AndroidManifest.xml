@@ -3,6 +3,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Required for accessing the network -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
     <application
         android:label="dolphin_livin_demo"
         android:name="${applicationName}"

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dolphin_livin_demo/core/permission_handler.dart';
 import 'package:dolphin_livin_demo/model/result.dart';
 import 'package:dolphin_livin_demo/services/dolphin_deeplink_redirect.dart';
 import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
@@ -10,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class ExplorerView extends StatefulWidget {
   const ExplorerView({
@@ -36,6 +39,7 @@ class _ExplorerViewState extends State<ExplorerView>
   @override
   void initState() {
     super.initState();
+    PermissionHandler().listenForPermissions();
     focusNode = FocusNode();
     controller = TextEditingController();
     init();
@@ -52,6 +56,10 @@ class _ExplorerViewState extends State<ExplorerView>
           msg:
               "Cannot retrieve suggestions right now. Please try again later.");
     }
+
+    if (!_speechEnabled) {
+      _initSpeech();
+    }
   }
 
   @override
@@ -63,7 +71,66 @@ class _ExplorerViewState extends State<ExplorerView>
   }
 
   doSubmitSearch(ExplorerProvider explorerProvider) async {
-    if (!explorerProvider.loading && controller.text.length > 3) explorerProvider.submitSearch();
+    if (!explorerProvider.loading && controller.text.length > 3) {
+      explorerProvider.submitSearch();
+    }
+  }
+
+  ///
+  /// Text to speech mechanism
+  ///
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  bool _isListening = false;
+  String _lastWords = "";
+
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+  }
+
+  /// Each time to start a speech recognition session
+  void _startListening() async {
+    dolphinLogger.i("_startListening()");
+    await _speechToText.listen(
+      onResult: _onResult,
+      listenFor: const Duration(seconds: 30),
+      localeId: "id_ID",
+      cancelOnError: false,
+      partialResults: false,
+      listenMode: ListenMode.confirmation,
+    );
+    setState(() {
+      _isListening = true;
+    });
+  }
+
+  /// Manually stop the active speech recognition session
+  /// Note that there are also timeouts that each platform enforces
+  /// and the SpeechToText plugin supports setting timeouts on the
+  /// listen method.
+  void _stopListening() async {
+    dolphinLogger.i("_stopListening()");
+    await _speechToText.stop();
+    setState(() {
+      _isListening = false;
+    });
+  }
+
+  /// This is the callback that the SpeechToText plugin calls when
+  /// the platform returns recognized words.
+  void _onResult(SpeechRecognitionResult result) {
+    dolphinLogger.i("_onSpeechResult() result: $result");
+    setState(() {
+      _isListening = false;
+
+      _lastWords = "$_lastWords${result.recognizedWords} ";
+      controller.text = _lastWords;
+      var explorerProvider =
+          Provider.of<ExplorerProvider>(context, listen: false);
+      if (!explorerProvider.loading && controller.text.length > 3) {
+        explorerProvider.submitSearch();
+      }
+    });
   }
 
   @override
@@ -166,86 +233,117 @@ class _ExplorerViewState extends State<ExplorerView>
                 Padding(
                   padding:
                       EdgeInsets.symmetric(horizontal: 20.r, vertical: 20.r),
-                  child: Column(
+                  child: Wrap(
+                    direction: Axis.horizontal,
                     children: [
-                      TextFormField(
-                        autofocus: true,
-                        controller: controller,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: const Color(0xfffeffff).withOpacity(0.1),
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 12.r, horizontal: 8.r),
-                            child: Image.asset(
-                              "assets/images/home/ic_home_search.png",
-                              height: 8.r,
+                      Column(
+                        children: [
+                          TextFormField(
+                            autofocus: true,
+                            controller: controller,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor:
+                                  const Color(0xfffeffff).withOpacity(0.1),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 12.r, horizontal: 8.r),
+                                child: Image.asset(
+                                  "assets/images/home/ic_home_search.png",
+                                  height: 8.r,
+                                ),
+                              ),
+                              suffixIcon: IconButton(
+                                  onPressed: explorerProviderWidget.submitted
+                                      ? () => {
+                                            setState(() {
+                                              controller.text = '';
+                                              _lastWords = '';
+                                              explorerProviderWidget
+                                                  .clearData();
+                                              explorerProviderWidget
+                                                  .populateSuggestion();
+                                            })
+                                          }
+                                      : null,
+                                  icon: const Icon(Icons.clear)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16.r),
+                                borderSide: BorderSide(
+                                    color: Colors.white.withOpacity(0.2)),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24.r),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24.r),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withOpacity(0.2),
+                                ),
+                              ),
+                              hintText: "Apa yang anda butuhkan?",
+                              hintStyle: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge!
+                                  .copyWith(
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.white.withOpacity(0.6)),
                             ),
+                            focusNode: focusNode,
+                            onFieldSubmitted: (value) =>
+                                doSubmitSearch(explorerProviderWidget),
+                            onTapOutside: (event) => focusNode.unfocus(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(fontWeight: FontWeight.w400),
                           ),
-                          suffixIcon: IconButton(
-                              onPressed: explorerProviderWidget.submitted
-                                  ? () => {
-                                        setState(() {
-                                          controller.text = '';
-                                          explorerProviderWidget.clearData();
-                                          explorerProviderWidget
-                                              .populateSuggestion();
-                                        })
-                                      }
-                                  : null,
-                              icon: const Icon(Icons.clear)),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16.r),
-                            borderSide: BorderSide(
-                                color: Colors.white.withOpacity(0.2)),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24.r),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24.r),
-                            borderSide: BorderSide(
-                              color: Colors.white.withOpacity(0.2),
-                            ),
-                          ),
-                          hintText: "Apa yang anda butuhkan?",
-                          hintStyle: Theme.of(context)
-                              .textTheme
-                              .labelLarge!
-                              .copyWith(
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white.withOpacity(0.6)),
-                        ),
-                        focusNode: focusNode,
-                        onFieldSubmitted: (value) =>
-                            doSubmitSearch(explorerProviderWidget),
-                        onTapOutside: (event) => focusNode.unfocus(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge!
-                            .copyWith(fontWeight: FontWeight.w400),
+                          buildExplorerContents(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Column(
+                                children: [
+                                  (_isListening)
+                                      ? Padding(
+                                          padding: EdgeInsets.only(bottom: 1.r),
+                                          child: Text(
+                                            "listening...",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelMedium,
+                                          ),
+                                        )
+                                      : const SizedBox.shrink(),
+                                  CircleAvatar(
+                                    radius: 30,
+                                    backgroundColor: (_isListening)
+                                        ? Colors.red
+                                        : Colors.grey,
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.mic,
+                                        color: Colors.white,
+                                      ),
+                                      onPressed: () {
+                                        if (_isListening) {
+                                          _stopListening();
+                                        } else {
+                                          _startListening();
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        ],
                       ),
-                      buildExplorerContents(),
                     ],
                   ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 8.r),
-                          child: IconButton.filled(
-                              onPressed: () => Navigator.pop(context),
-                              icon: const Icon(Icons.close)),
-                        ),
-                      ],
-                    )
-                  ],
-                )
               ],
             ),
           ),
