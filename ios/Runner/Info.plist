@@ -5,8 +5,9 @@
 	<key>FlutterDeepLinkingEnabled</key>
 	<true/>
 	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>We need access to speech recognition for voice commands.</string>
 	<key>NSMicrophoneUsageDescription</key>
-
+	<string>We need access to the microphone for voice input.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
