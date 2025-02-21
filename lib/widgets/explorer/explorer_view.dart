@@ -135,72 +135,6 @@ class _ExplorerViewState extends State<ExplorerView>
 
   @override
   Widget build(BuildContext context) {
-    Widget buildSuggestions(ExplorerProvider explorerProvider) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "SUGGESTION",
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge!
-                .copyWith(fontSize: 14.sp, color: const Color(0xff7A7E87)),
-          ),
-          if (explorerProvider.suggestions.isNotEmpty)
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: explorerProvider.suggestions.length,
-              itemBuilder: (context, index) => ListTile(
-                contentPadding: const EdgeInsets.all(0),
-                minTileHeight: 0,
-                dense: true,
-                title: InkWell(
-                  onTap: () {
-                    setState(() {
-                      controller.text = explorerProvider.suggestions[index];
-                    });
-                    doSubmitSearch(explorerProvider);
-                  },
-                  child: Text(
-                    explorerProvider.suggestions[index],
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge!
-                        .copyWith(fontWeight: FontWeight.w400),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      );
-    }
-
-    buildAnswer() {
-      return Column(
-        children: [
-          Selector<ExplorerProvider, Result?>(
-            selector: (context, explorerProvider) => explorerProvider.result,
-            builder: (context, explorerProvider, child) =>
-                ExplorerAnswerGenerator(
-              question: controller.text,
-            ),
-          ),
-        ],
-      );
-    }
-
-    Widget buildExplorerContents() {
-      if (!explorerProviderWidget.loading) {
-        if (!explorerProviderWidget.submitted) {
-          return buildSuggestions(explorerProviderWidget);
-        } else {
-          return buildAnswer();
-        }
-      } else {
-        return const ExplorerLoading();
-      }
-    }
-
     return PopScope(
       canPop: !Provider.of<ExplorerProvider>(context).loading,
       child: BackdropFilter(
@@ -224,14 +158,21 @@ class _ExplorerViewState extends State<ExplorerView>
                 Padding(
                   padding:
                       EdgeInsets.symmetric(horizontal: 20.r, vertical: 20.r),
-                  child: Column(
+                  child: Wrap(
                     children: [
-                      buildInputForm(context),
-                      Padding(
-                        padding: EdgeInsets.only(top: 20.r),
-                        child: buildExplorerContents(),
+                      Column(
+                        children: [
+                          buildInputForm(context),
+                          Padding(
+                            padding: EdgeInsets.only(top: 20.r),
+                            child: buildExplorerContents(),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 10.r),
+                            child: buildVoiceRow(context),
+                          )
+                        ],
                       ),
-                      buildVoiceRow(context)
                     ],
                   ),
                 ),
@@ -241,6 +182,72 @@ class _ExplorerViewState extends State<ExplorerView>
         ),
       ),
     );
+  }
+
+  Widget buildSuggestions(ExplorerProvider explorerProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "SUGGESTION",
+          style: Theme.of(context)
+              .textTheme
+              .labelLarge!
+              .copyWith(fontSize: 14.sp, color: const Color(0xff7A7E87)),
+        ),
+        if (explorerProvider.suggestions.isNotEmpty)
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: explorerProvider.suggestions.length,
+            itemBuilder: (context, index) => ListTile(
+              contentPadding: const EdgeInsets.all(0),
+              minTileHeight: 0,
+              dense: true,
+              title: InkWell(
+                onTap: () {
+                  setState(() {
+                    controller.text = explorerProvider.suggestions[index];
+                  });
+                  doSubmitSearch(explorerProvider);
+                },
+                child: Text(
+                  explorerProvider.suggestions[index],
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(fontWeight: FontWeight.w400),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  buildAnswer() {
+    return Column(
+      children: [
+        Selector<ExplorerProvider, Result?>(
+          selector: (context, explorerProvider) => explorerProvider.result,
+          builder: (context, explorerProvider, child) =>
+              ExplorerAnswerGenerator(
+            question: controller.text,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildExplorerContents() {
+    if (!explorerProviderWidget.loading) {
+      if (!explorerProviderWidget.submitted) {
+        return buildSuggestions(explorerProviderWidget);
+      } else {
+        return buildAnswer();
+      }
+    } else {
+      return const ExplorerLoading();
+    }
   }
 
   Widget buildInputForm(BuildContext context) {
@@ -296,8 +303,8 @@ class _ExplorerViewState extends State<ExplorerView>
           .copyWith(fontWeight: FontWeight.w400),
     );
   }
-
   Widget buildVoiceRow(BuildContext context) {
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
