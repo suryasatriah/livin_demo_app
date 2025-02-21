@@ -189,25 +189,16 @@ class _ExplorerViewState extends State<ExplorerView>
       );
     }
 
-    Widget buildShimmer() {
-      return const ExplorerLoading();
-    }
-
     Widget buildExplorerContents() {
-      Widget getChild() {
-        if (!explorerProviderWidget.loading) {
-          if (!explorerProviderWidget.submitted) {
-            return buildSuggestions(explorerProviderWidget);
-          } else {
-            return buildAnswer();
-          }
+      if (!explorerProviderWidget.loading) {
+        if (!explorerProviderWidget.submitted) {
+          return buildSuggestions(explorerProviderWidget);
         } else {
-          return buildShimmer();
+          return buildAnswer();
         }
+      } else {
+        return const ExplorerLoading();
       }
-
-      return Padding(
-          padding: EdgeInsets.symmetric(vertical: 24.r), child: getChild());
     }
 
     return PopScope(
@@ -233,114 +224,14 @@ class _ExplorerViewState extends State<ExplorerView>
                 Padding(
                   padding:
                       EdgeInsets.symmetric(horizontal: 20.r, vertical: 20.r),
-                  child: Wrap(
-                    direction: Axis.horizontal,
+                  child: Column(
                     children: [
-                      Column(
-                        children: [
-                          TextFormField(
-                            autofocus: true,
-                            controller: controller,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor:
-                                  const Color(0xfffeffff).withOpacity(0.1),
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 12.r, horizontal: 8.r),
-                                child: Image.asset(
-                                  "assets/images/home/ic_home_search.png",
-                                  height: 8.r,
-                                ),
-                              ),
-                              suffixIcon: IconButton(
-                                  onPressed: explorerProviderWidget.submitted
-                                      ? () => {
-                                            setState(() {
-                                              controller.text = '';
-                                              _lastWords = '';
-                                              explorerProviderWidget
-                                                  .clearData();
-                                              explorerProviderWidget
-                                                  .populateSuggestion();
-                                            })
-                                          }
-                                      : null,
-                                  icon: const Icon(Icons.clear)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16.r),
-                                borderSide: BorderSide(
-                                    color: Colors.white.withOpacity(0.2)),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(24.r),
-                                borderSide: BorderSide.none,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(24.r),
-                                borderSide: BorderSide(
-                                  color: Colors.white.withOpacity(0.2),
-                                ),
-                              ),
-                              hintText: "Apa yang anda butuhkan?",
-                              hintStyle: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.white.withOpacity(0.6)),
-                            ),
-                            focusNode: focusNode,
-                            onFieldSubmitted: (value) =>
-                                doSubmitSearch(explorerProviderWidget),
-                            onTapOutside: (event) => focusNode.unfocus(),
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(fontWeight: FontWeight.w400),
-                          ),
-                          buildExplorerContents(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Column(
-                                children: [
-                                  (_isListening)
-                                      ? Padding(
-                                          padding: EdgeInsets.only(bottom: 1.r),
-                                          child: Text(
-                                            "listening...",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelMedium,
-                                          ),
-                                        )
-                                      : const SizedBox.shrink(),
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundColor: (_isListening)
-                                        ? Colors.red
-                                        : Colors.grey,
-                                    child: IconButton(
-                                      icon: const Icon(
-                                        Icons.mic,
-                                        color: Colors.white,
-                                      ),
-                                      onPressed: () {
-                                        if (_isListening) {
-                                          _stopListening();
-                                        } else {
-                                          _startListening();
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
-                        ],
+                      buildInputForm(context),
+                      Padding(
+                        padding: EdgeInsets.only(top: 20.r),
+                        child: buildExplorerContents(),
                       ),
+                      buildVoiceRow(context)
                     ],
                   ),
                 ),
@@ -349,6 +240,98 @@ class _ExplorerViewState extends State<ExplorerView>
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildInputForm(BuildContext context) {
+    return TextFormField(
+      autofocus: true,
+      controller: controller,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: const Color(0xfffeffff).withOpacity(0.1),
+        prefixIcon: Padding(
+          padding: EdgeInsets.symmetric(vertical: 12.r, horizontal: 8.r),
+          child: Image.asset(
+            "assets/images/home/ic_home_search.png",
+            height: 8.r,
+          ),
+        ),
+        suffixIcon: IconButton(
+            onPressed: explorerProviderWidget.submitted
+                ? () => {
+                      setState(() {
+                        controller.text = '';
+                        _lastWords = '';
+                        explorerProviderWidget.clearData();
+                        explorerProviderWidget.populateSuggestion();
+                      })
+                    }
+                : null,
+            icon: const Icon(Icons.clear)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24.r),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24.r),
+          borderSide: BorderSide(
+            color: Colors.white.withOpacity(0.2),
+          ),
+        ),
+        hintText: "Apa yang anda butuhkan?",
+        hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
+            fontWeight: FontWeight.w400, color: Colors.white.withOpacity(0.6)),
+      ),
+      focusNode: focusNode,
+      onFieldSubmitted: (value) => doSubmitSearch(explorerProviderWidget),
+      onTapOutside: (event) => focusNode.unfocus(),
+      style: Theme.of(context)
+          .textTheme
+          .labelLarge!
+          .copyWith(fontWeight: FontWeight.w400),
+    );
+  }
+
+  Widget buildVoiceRow(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Column(
+          children: [
+            (_isListening)
+                ? Padding(
+                    padding: EdgeInsets.only(bottom: 1.r),
+                    child: Text(
+                      "listening...",
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: (_isListening) ? Colors.red : Colors.grey,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.mic,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  if (_isListening) {
+                    _stopListening();
+                  } else {
+                    _startListening();
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

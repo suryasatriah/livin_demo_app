@@ -38,6 +38,12 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
     }
   }
 
+  var debugText =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris finibus lacinia pharetra. Quisque rhoncus felis ac sem pharetra euismod. Praesent malesuada, felis et pulvinar pharetra, lacus augue fermentum augue, sed gravida metus est at libero. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque auctor libero sem, eu iaculis ligula efficitur sit amet. Praesent efficitur lectus in est fermentum eleifend. Sed et odio quis arcu lacinia iaculis. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam sed ipsum enim. Integer varius libero a felis consectetur, et vehicula nisi varius. Maecenas eget risus nec diam commodo iaculis. Morbi sit amet commodo tellus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla massa purus, venenatis at orci at, semper sodales neque. Sed eget nulla eget tortor elementum consectetur. Fusce vitae lacinia lorem, quis vulputate ante. Integer volutpat sollicitudin interdum. Nullam auctor facilisis commodo. Praesent pharetra interdum quam, vitae efficitur sem euismod vitae. Fusce egestas aliquet viverra. Cras magna nunc, efficitur vel hendrerit nec, sagittis sit amet mi. Vestibulum quis nisi a risus consequat hendrerit. Cras orci diam, cursus nec cursus vitae, tempor quis ante. Aenean non dignissim erat. Nulla varius neque at neque auctor cursus at vitae erat. Integer tincidunt fermentum dignissim. Duis sodales libero in sem auctor commodo. Ut eget elit a neque pretium vestibulum.";
+
+  ///
+  /// Build method
+  ///
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<String>(
@@ -58,6 +64,7 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
                       ));
             } else {
               displayText = generateAnswerWidget(snapshot.data);
+              // displayText = generateAnswerWidget(debugText);
             }
             break;
           default:
