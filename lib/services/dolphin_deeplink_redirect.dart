@@ -4,18 +4,20 @@ import 'package:dolphin_livin_demo/screens/pln/pln_pra_screen.dart';
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
 import 'package:dolphin_livin_demo/screens/transfer/transfer_amt_view.dart';
 import 'package:dolphin_livin_demo/screens/transfer/transfer_view.dart';
+import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 mixin DolphinDeepLinkNavigator {
   static const String kEndpointPlnPra = "/plnpra";
+  static final DolphinLogger _dolphinLogger = DolphinLogger.instance;
 
   Future<void> navigateDeeplink(BuildContext context,
       {required String url}) async {
     try {
       final uri = Uri.parse(url);
 
-      if (Platform.isIOS && context.mounted) {
+      if ((Platform.isIOS || Platform.isAndroid) && context.mounted) {
         _handleIOSDeeplink(context, uri);
       } else {
         await _launchExternalDeeplink(uri);
@@ -46,6 +48,7 @@ mixin DolphinDeepLinkNavigator {
             MaterialPageRoute(
                 builder: (context) => TransferView(
                       amount: uri.queryParameters['amt'] ?? "0",
+                      destination: uri.queryParameters['dest'],
                     ))).then((_) {});
       } else {
         Navigator.push(
@@ -63,10 +66,14 @@ mixin DolphinDeepLinkNavigator {
   }
 
   Future<void> _launchExternalDeeplink(Uri uri) async {
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      throw Exception("Unable to launch URL.");
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        throw Exception("Can't launch url");
+      }
+    } catch (e, stack) {
+      _dolphinLogger.e("Can't launch url : $e", stackTrace: stack);
     }
   }
 }

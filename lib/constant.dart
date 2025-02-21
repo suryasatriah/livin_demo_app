@@ -53,11 +53,11 @@ var kBasicPredictPayload = {
   "owner": "82ab0fd5cfd1e80d1ff97c0cfcmandiri",
   "dolphinLicense": "mandiri",
   "botThinkConfig": {
-    "confident": 15,
+    "confident": 5,
     "maxDocumentLimit": 5,
     "documentTokenLength": 5000,
     "documentRelevancy": false,
-    "processFlowRelevancy": false,
+    "processFlowRelevancy": true,
     "reRank": false,
     "retainHistoryFallback": false
   }

@@ -10,10 +10,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TransferView extends StatefulWidget {
   final String? amount;
+  final String? destination;
 
   const TransferView({
     super.key,
     this.amount,
+    this.destination,
   });
 
   @override
@@ -32,6 +34,10 @@ class _TransferViewState extends State<TransferView> {
   void initState() {
     super.initState();
     controller = TextEditingController();
+    if (widget.destination != null) {
+      controller.text = widget.destination!;
+      canContinue = true;
+    }
     menuController = TextEditingController();
   }
 
