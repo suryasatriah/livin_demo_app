@@ -99,8 +99,12 @@ class _ExplorerViewState extends State<ExplorerView>
       partialResults: false,
       listenMode: ListenMode.confirmation,
     );
+
+    explorerProviderWidget.clearData();
     setState(() {
       _isListening = true;
+      controller.text = "";
+      _lastWords = "";
     });
   }
 
@@ -168,7 +172,7 @@ class _ExplorerViewState extends State<ExplorerView>
                             child: buildExplorerContents(),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 10.r),
+                            padding: EdgeInsets.only(bottom: 12.r),
                             child: buildVoiceRow(context),
                           )
                         ],
@@ -188,7 +192,7 @@ class _ExplorerViewState extends State<ExplorerView>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        if (!_isListening) Text(
           "SUGGESTION",
           style: Theme.of(context)
               .textTheme
@@ -312,9 +316,9 @@ class _ExplorerViewState extends State<ExplorerView>
           children: [
             (_isListening)
                 ? Padding(
-                    padding: EdgeInsets.only(bottom: 1.r),
+                    padding: EdgeInsets.only(bottom: 8.r),
                     child: Text(
-                      "listening...",
+                      "Listening...",
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   )

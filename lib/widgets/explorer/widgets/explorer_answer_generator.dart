@@ -85,60 +85,65 @@ class _ExplorerAnswerGeneratorState extends State<ExplorerAnswerGenerator>
         height: MediaQuery.of(context).size.height * 0.7,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: IntrinsicHeight(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height * 0.7,
+            ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                MarkdownBody(
-                  data: text,
-                  styleSheet: MarkdownStyleSheet(
-                    p: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w400,
-                        ),
-                    a: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w400,
-                        ),
-                    listBullet: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w400,
-                        ),
+                // Make the Markdown content scrollable
+                SingleChildScrollView(
+                  child: MarkdownBody(
+                    data: text,
+                    styleSheet: MarkdownStyleSheet(
+                      p: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w400,
+                          ),
+                      a: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w400,
+                          ),
+                      listBullet:
+                          Theme.of(context).textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.w400,
+                              ),
+                    ),
                   ),
                 ),
-                explorerProvider.button != null
-                    ? Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Divider(
-                              color: Colors.white.withOpacity(0.2),
-                            ),
-                          ),
-                          ListTile(
-                            title: Text(
-                              explorerProvider.button?.label ?? 'More',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge
-                                  ?.copyWith(
+                if (explorerProvider.button != null)
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Divider(
+                          color: Colors.white.withOpacity(0.2),
+                        ),
+                      ),
+                      ListTile(
+                        title: Text(
+                          explorerProvider.button?.label ?? 'More',
+                          style:
+                              Theme.of(context).textTheme.labelLarge?.copyWith(
                                     fontWeight: FontWeight.w400,
                                   ),
-                            ),
-                            contentPadding: EdgeInsets.zero,
-                            trailing: IconButton(
-                              onPressed: () => {
-                                Navigator.pop(context),
-                                navigateDeeplink(
-                                  context,
-                                  url: explorerProvider.button?.link ?? '',
-                                )
-                              },
-                              icon: const Icon(
-                                Icons.arrow_outward,
-                                color: Colors.white,
-                              ),
-                            ),
+                        ),
+                        contentPadding: EdgeInsets.zero,
+                        trailing: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            navigateDeeplink(
+                              context,
+                              url: explorerProvider.button?.link ?? '',
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.arrow_outward,
+                            color: Colors.white,
                           ),
-                        ],
-                      )
-                    : const SizedBox.shrink(),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
