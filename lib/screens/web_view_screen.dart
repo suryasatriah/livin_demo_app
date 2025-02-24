@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:dolphin_livin_demo/core/permission_handler.dart';
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
 import 'package:dolphin_livin_demo/screens/transfer/transfer_amt_view.dart';
 import 'package:dolphin_livin_demo/screens/transfer/transfer_view.dart';
+import 'package:dolphin_livin_demo/services/dolphin_api.dart';
+import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 import 'package:dolphin_livin_demo/widgets/webView/web_view_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,6 +30,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
   @override
   void initState() {
     super.initState();
+    PermissionHandler().listenForPermissions();
     initController();
   }
 
@@ -50,6 +54,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
     webViewController
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setOnConsoleMessage(
+          (consoleMessage) => onConsoleMessage(consoleMessage))
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
@@ -64,6 +70,24 @@ class _WebViewScreenState extends State<WebViewScreen> {
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
+  }
+
+  onConsoleMessage(JavaScriptConsoleMessage consoleMessage) {
+    var logEvent = {
+        "type": "JavaScriptConsoleMessage",
+        "level": consoleMessage.level,
+        "message": consoleMessage.message,
+      };
+    
+   
+    if (consoleMessage.level == JavaScriptLogLevel.error) {
+      DolphinLogger.instance.e("onConsoleMessage() consoleMessage: ${logEvent.toString()}");
+      DolphinApi.instance.sendLogEvent(
+        logEvent.toString()
+      );
+    } else {
+       DolphinLogger.instance.d("onConsoleMessage() consoleMessage: ${logEvent.toString()}");
+    }
   }
 
   Future<NavigationDecision> handleNavigationRequest(

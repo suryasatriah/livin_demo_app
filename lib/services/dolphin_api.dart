@@ -146,14 +146,18 @@ class DolphinApi {
         dolphinLogger.e("Unexpected response format");
       }
     } catch (e, stack) {
-      
       dolphinLogger.e(e, stackTrace: stack);
     }
     return [];
   }
 
   Future<void> sendLogEvent(String log) async {
-    await dolphinDio.post("http://mandiri.3dolphins.ai:19000/log", data: {'log' : log});
+    try {
+      await dolphinDio
+          .post("http://mandiri.3dolphins.ai:19000/log", data: {'log': log});
+    } catch (e, stack) {
+      dolphinLogger.e(e, stackTrace: stack);
+    }
   }
 
   Stream<String> fetchStream(
@@ -180,7 +184,7 @@ class DolphinApi {
 
     dolphinDio
         .post(
-        kGenerativeUrl + kEndpointPredictStream,
+      kGenerativeUrl + kEndpointPredictStream,
       data: payload,
       responseType: ResponseType.stream,
     )
