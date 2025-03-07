@@ -13,4 +13,7 @@ class AuthToken {
       _$AuthTokenFromJson(json);
 
   Map<String, dynamic> toJson() => _$AuthTokenToJson(this);
+
+  bool isTokenExpired() => expireAt?.isBefore(DateTime.now()) == true;
+  
 }

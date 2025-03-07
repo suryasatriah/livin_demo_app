@@ -39,6 +39,7 @@ dependencies:
   path_provider: ^2.1.5
   flutter_sound: ^9.23.1
   ffmpeg_kit_flutter_full_gpl: ^6.0.3
+  flutter_svg: ^2.0.17
 
 dev_dependencies:
   flutter_test:
@@ -69,5 +70,3 @@ flutter_gen:
   integrations:
     image: true
     flutter_svg: true
-    rive: true
-    lottie: true

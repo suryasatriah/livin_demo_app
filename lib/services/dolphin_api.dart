@@ -259,8 +259,9 @@ class DolphinApi  {
   }
 
 
+
   Future<List<Bot>> fetchBotList(
-      {String? botId, int start = 0, int count = 10}) async {
+      {String? botId, required String token, int start = 0, int count = 10}) async {
     List<Bot> result = [];
 
     try {
@@ -270,8 +271,9 @@ class DolphinApi  {
         "count": count,
       };
 
+
       var response = await _httpClient.get(_getNonGenerativeUrl(kEndpointBots),
-          queryParameters: queryParameters);
+          queryParameters: queryParameters, token: token);
 
       if (response.data != null && response.data is List) {
         result = (response.data as List)

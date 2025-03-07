@@ -23,7 +23,6 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
   String speechText = "";
   SpeechToText speechToText = SpeechToText();
   GenerativeService generativeService = GenerativeService();
-  AudioPlayer audioPlayer = AudioPlayer();
 
   /// Initialize speech recognition
   /// Permission for microphone is needed to use speech
@@ -126,21 +125,21 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
   Future<void> playAudio(String? wavPath) async {
     if (wavPath != null) {
       changeVoiceBotStatus(VoiceBotStatus.speaking);
-
+      var audioPlayer = AudioPlayer();
       try {
         await audioPlayer.play(DeviceFileSource(wavPath));
-
         // Wait for completion
-        await _waitForAudioCompletion();
+        await _waitForAudioCompletion(audioPlayer);
       } catch (e) {
         _log.e(e);
       }
+      audioPlayer.dispose();
     }
 
     changeVoiceBotStatus(VoiceBotStatus.idling);
   }
 
-  Future<void> _waitForAudioCompletion() async {
+  Future<void> _waitForAudioCompletion(AudioPlayer audioPlayer) async {
     final completer = Completer<void>();
     void onComplete() {
       if (!completer.isCompleted) {
@@ -157,11 +156,5 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
     if (this.voiceBotStatus == voiceBotStatus) return;
     this.voiceBotStatus = voiceBotStatus;
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    audioPlayer.dispose();
-    super.dispose();
   }
 }
