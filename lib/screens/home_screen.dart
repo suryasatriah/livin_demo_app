@@ -1,9 +1,13 @@
 import 'package:dolphin_livin_demo/constant.dart';
+import 'package:dolphin_livin_demo/core/core_notifier.dart';
+import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_view.dart';
+import 'package:dolphin_livin_demo/gen/assets.gen.dart';
 import 'package:dolphin_livin_demo/screens/web_view_screen.dart';
 import 'package:dolphin_livin_demo/widgets/explorer/explorer_view.dart';
 import 'package:dolphin_livin_demo/widgets/image_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +17,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<CoreNotifier>(context, listen: false).init();
+  }
+
   void showFullScreenDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -52,6 +62,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Row(
                                 children: [
+                                  SvgButton(
+                                    asset: Assets.icons.icMicrophone.svg(
+                                      height: 24.r,
+                                      colorFilter: const ColorFilter.mode(
+                                          Colors.white, BlendMode.srcIn),
+                                    ),
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const VoiceBotView())),
+                                  ),
                                   ImageButton(
                                     asset:
                                         "assets/images/home/ic_home_search.png",

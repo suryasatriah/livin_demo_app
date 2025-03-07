@@ -273,8 +273,11 @@ class $AssetsIconsGen {
   SvgGenImage get icMicrophone =>
       const SvgGenImage('assets/icons/ic_microphone.svg');
 
+  /// File path: assets/icons/ic_mita.png
+  AssetGenImage get icMita => const AssetGenImage('assets/icons/ic_mita.png');
+
   /// List of all assets
-  List<dynamic> get values => [icDolphin, icMicrophone];
+  List<dynamic> get values => [icDolphin, icMicrophone, icMita];
 }
 
 class $AssetsImagesGen {

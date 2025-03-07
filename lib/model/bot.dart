@@ -4,19 +4,27 @@ part 'bot.g.dart';
 
 @JsonSerializable()
 class Bot {
-  final String id;
-  final String owner;
-  final int createdDate;
-  final String createdBy;
-  final int modifiedDate;
-  final String modifiedBy;
-  final String botName;
-  final List<String> botPersona;
-  final String activationText;
-  final String activationCommand;
-  final int dialogTimeout;
-  final int domainTimeout;
-  final String language;
+  String id;
+  String owner;
+  int createdDate;
+  String createdBy;
+  int modifiedDate;
+  String modifiedBy;
+  String botName;
+  List<String> botPersona;
+  String activationText;
+  String activationCommand;
+  int dialogTimeout;
+  int domainTimeout;
+  String language;
+  int confident;
+  int maxDocumentLimit;
+  int documentTokenLength;
+  bool documentRelevancy;
+  bool processFlowRelevancy;
+  bool reRank;
+  int maxDocumentRetryLimit;
+  bool retainHistoryFallback;
 
   Bot({
     this.id = "",
@@ -32,6 +40,14 @@ class Bot {
     this.dialogTimeout = 0,
     this.domainTimeout = 0,
     this.language = "",
+    this.confident = 0,
+    this.maxDocumentLimit = 0,
+    this.documentTokenLength = 0,
+    this.documentRelevancy = false,
+    this.processFlowRelevancy = false,
+    this.reRank = false,
+    this.maxDocumentRetryLimit = 0,
+    this.retainHistoryFallback = false,
   });
 
   factory Bot.fromJson(Map<String, dynamic> json) => _$BotFromJson(json);

@@ -23,6 +23,15 @@ Bot _$BotFromJson(Map<String, dynamic> json) => Bot(
       dialogTimeout: (json['dialogTimeout'] as num?)?.toInt() ?? 0,
       domainTimeout: (json['domainTimeout'] as num?)?.toInt() ?? 0,
       language: json['language'] as String? ?? "",
+      confident: (json['confident'] as num?)?.toInt() ?? 0,
+      maxDocumentLimit: (json['maxDocumentLimit'] as num?)?.toInt() ?? 0,
+      documentTokenLength: (json['documentTokenLength'] as num?)?.toInt() ?? 0,
+      documentRelevancy: json['documentRelevancy'] as bool? ?? false,
+      processFlowRelevancy: json['processFlowRelevancy'] as bool? ?? false,
+      reRank: json['reRank'] as bool? ?? false,
+      maxDocumentRetryLimit:
+          (json['maxDocumentRetryLimit'] as num?)?.toInt() ?? 0,
+      retainHistoryFallback: json['retainHistoryFallback'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$BotToJson(Bot instance) => <String, dynamic>{
@@ -39,4 +48,12 @@ Map<String, dynamic> _$BotToJson(Bot instance) => <String, dynamic>{
       'dialogTimeout': instance.dialogTimeout,
       'domainTimeout': instance.domainTimeout,
       'language': instance.language,
+      'confident': instance.confident,
+      'maxDocumentLimit': instance.maxDocumentLimit,
+      'documentTokenLength': instance.documentTokenLength,
+      'documentRelevancy': instance.documentRelevancy,
+      'processFlowRelevancy': instance.processFlowRelevancy,
+      'reRank': instance.reRank,
+      'maxDocumentRetryLimit': instance.maxDocumentRetryLimit,
+      'retainHistoryFallback': instance.retainHistoryFallback,
     };

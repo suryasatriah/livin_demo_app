@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dolphin_livin_demo/core/core_notifier.dart';
 import 'package:dolphin_livin_demo/core/permission_handler.dart';
 import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_audio_converter.dart';
 import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_status.dart';
+import 'package:dolphin_livin_demo/model/predict_payload.dart';
 import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 import 'package:dolphin_livin_demo/services/generative_service.dart';
 import 'package:flutter/foundation.dart';
@@ -21,8 +23,14 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
   VoiceBotStatus voiceBotStatus = VoiceBotStatus.idling;
   bool speechEnabled = false;
   String speechText = "";
+  String sessionId = "";
+  String ticketNumber = "";
   SpeechToText speechToText = SpeechToText();
   GenerativeService generativeService = GenerativeService();
+
+  CoreNotifier? coreNotifier;
+
+  VoiceBotProvider({this.coreNotifier});
 
   /// Initialize speech recognition
   /// Permission for microphone is needed to use speech
@@ -31,6 +39,8 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
     PermissionHandler.listenForPermission(Permission.microphone);
     speechEnabled = await speechToText.initialize();
     _log.d("Speech enabled : $speechEnabled");
+    sessionId = generateRandomString();
+    ticketNumber = generateRandomString();
     notifyListeners();
   }
 
@@ -67,7 +77,12 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
     _log.d("stop listening speech");
     _log.i("recognized speech: $speechText");
     if (speechText.isNotEmpty) {
-      processMulawStream(submitSpeech());
+      try {
+        processMulawStream(submitSpeech());
+      } catch (e) {
+        _log.e(e);
+        onFail();
+      }
     } else {
       onFail();
     }
@@ -89,16 +104,27 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
   }
 
   Stream<Uint8List> submitSpeech() {
-    return generativeService.fetchPredictAudio(speechText);
+    var data = createPredictPayload(speechText);
+    if (data != null) {
+      return generativeService.fetchPredictAudio(data);
+    } else {
+      throw Exception("data is not ready");
+    }
   }
 
   Future<void> processMulawStream(Stream<Uint8List> mulawStream) async {
     changeVoiceBotStatus(VoiceBotStatus.generating);
     final List<Uint8List> audioChunks = [];
 
-    // Listen to the stream and collect data
-    await for (var chunk in mulawStream) {
-      audioChunks.add(chunk);
+    try {
+      // Listen to the stream and collect data
+      await for (var chunk in mulawStream) {
+        audioChunks.add(chunk);
+      }
+    } catch (e) {
+      _log.e("Error processing Mu-law stream: $e");
+      onFail();
+      return;
     }
 
     // Convert the collected data into a Mu-law file
@@ -134,9 +160,25 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
         _log.e(e);
       }
       audioPlayer.dispose();
+      onFinish();
     }
 
     changeVoiceBotStatus(VoiceBotStatus.idling);
+  }
+
+  Future<void> onFinish() async {
+    try {
+      final cacheDir = await getTemporaryDirectory();
+
+      if (cacheDir.existsSync()) {
+        cacheDir.deleteSync(recursive: true);
+        print("Cache cleared successfully.");
+      } else {
+        print("No cache directory found.");
+      }
+    } catch (e) {
+      print("Error clearing cache: $e");
+    }
   }
 
   Future<void> _waitForAudioCompletion(AudioPlayer audioPlayer) async {
@@ -156,5 +198,37 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
     if (this.voiceBotStatus == voiceBotStatus) return;
     this.voiceBotStatus = voiceBotStatus;
     notifyListeners();
+  }
+
+  Map<String, dynamic>? createPredictPayload(String question) {
+    if (coreNotifier?.bot != null) {
+      var bot = coreNotifier!.bot;
+      var payload = PredictPayload(
+          botThinkConfig: BotThinkConfig(
+              confident: bot.confident,
+              maxDocumentLimit: bot.maxDocumentLimit,
+              documentTokenLength: bot.documentTokenLength,
+              documentRelevancy: bot.documentRelevancy,
+              processFlowRelevancy: bot.documentRelevancy,
+              reRank: bot.reRank,
+              maxDocumentRetryLimit: bot.maxDocumentRetryLimit,
+              retainHistoryFallback: bot.retainHistoryFallback),
+          owner: bot.owner,
+          botId: bot.id,
+          botName: bot.botName,
+          persona: bot.botPersona.first,
+          sessionId: sessionId,
+          language: "indonesia",
+          question: [question],
+          dolphinLicense: "mandiri",
+          ticketNumber: ticketNumber,
+          channelId: "EMULATOR",
+          channelType: "EMULATOR");
+      var payloadJson = payload.toJson();
+
+      return payloadJson;
+    }
+
+    return null;
   }
 }

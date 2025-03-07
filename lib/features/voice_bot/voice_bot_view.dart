@@ -55,13 +55,13 @@ class _VoiceBotViewState extends State<VoiceBotView>
                     children: [
                       Padding(
                         padding: EdgeInsets.only(bottom: 8.r),
-                        child: Assets.icons.icDolphin.image(
+                        child: Assets.icons.icMita.image(
                           width: 48.r,
                           height: 48.r,
                         ),
                       ),
                       Text(
-                        "3Dolphins Generative",
+                        "Ask Mita",
                         style: Theme.of(context).textTheme.bodyMedium,
                       )
                     ],

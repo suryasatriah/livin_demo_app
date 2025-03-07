@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:dolphin_livin_demo/constant.dart';
 import 'package:dolphin_livin_demo/services/base_service.dart';
 import 'package:dolphin_livin_demo/services/dolphin_dio.dart';
 import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
@@ -13,30 +12,21 @@ class GenerativeService extends BaseService {
 
   static const String kEndpointPredictAudio = "/predict/voice";
 
-  Stream<Uint8List> fetchPredictAudio(String text) {
+  Stream<Uint8List> fetchPredictAudio(Map<String, dynamic> data) {
     StreamController<Uint8List> controller = StreamController<Uint8List>();
 
-    var questionPayload = {
-      "question": [text]
-    };
-    var generatedPayload = {
-      "sessionId": generateRandomString(),
-      "ticketNumber": generateRandomString(),
-    };
-    var payload = kBasicPredictPayload
-      ..addAll(questionPayload)
-      ..addAll(generatedPayload);
+    
     var url = getGenerativeUrl(kEndpointPredictAudio);
 
     _logger.i({
       "url": url,
-      "payload": payload,
+      "payload": data,
     });
 
     _dio
         .post(
       url,
-      data: payload,
+      data: data,
       responseType: ResponseType.stream,
     )
         .then(

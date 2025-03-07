@@ -8,9 +8,7 @@ part of 'auth_token.dart';
 
 AuthToken _$AuthTokenFromJson(Map<String, dynamic> json) => AuthToken(
       token: json['token'] as String? ?? "",
-      expireAt: json['expireAt'] == null
-          ? null
-          : DateTime.parse(json['expireAt'] as String),
+      expireAt: AuthToken.expireAtFromJson(json['expireAt'] as String),
     );
 
 Map<String, dynamic> _$AuthTokenToJson(AuthToken instance) => <String, dynamic>{

@@ -1,6 +1,7 @@
 import 'package:dolphin_livin_demo/constant.dart';
+import 'package:dolphin_livin_demo/core/core_notifier.dart';
 import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_provider.dart';
-import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_view.dart';
+import 'package:dolphin_livin_demo/screens/home_screen.dart';
 import 'package:dolphin_livin_demo/screens/pln/pln_pra_screen.dart';
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
 import 'package:dolphin_livin_demo/screens/transfer/transfer_amt_view.dart';
@@ -26,7 +27,7 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (_, __) => const VoiceBotView(),
+      builder: (_, __) => const HomeScreen(),
       routes: [
         GoRoute(
           path: 'sukha',
@@ -59,17 +60,25 @@ class DolphinLivinDemo extends StatelessWidget {
   // Create Providers
   _createProviders() {
     return [
+      ChangeNotifierProvider<CoreNotifier>(
+        create: (_) => CoreNotifier(user: kUser, botId: kBotId),
+      ),
       ChangeNotifierProvider<ExplorerProvider>(
           create: (_) => ExplorerProvider()),
       ChangeNotifierProvider<ExplorerAnswerGeneratorProvider>(
           create: (_) => ExplorerAnswerGeneratorProvider()),
-      ChangeNotifierProvider<VoiceBotProvider>(
-          create: (_) => VoiceBotProvider()),
+      ChangeNotifierProxyProvider<CoreNotifier, VoiceBotProvider>(
+        create: (_) => VoiceBotProvider(),
+        update: (_, coreNotifier, voiceBotProvider) {
+          voiceBotProvider!.coreNotifier = coreNotifier;
+          return voiceBotProvider;
+        },
+      ),
     ];
   }
 
-      // Create ThemeData
-      _createTheme(BuildContext context) {
+  // Create ThemeData
+  _createTheme(BuildContext context) {
     return ThemeData().copyWith(
         scaffoldBackgroundColor: Colors.white,
         textTheme:

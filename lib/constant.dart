@@ -1,3 +1,5 @@
+import 'package:dolphin_livin_demo/model/predict_payload.dart';
+import 'package:dolphin_livin_demo/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -33,15 +35,10 @@ const kTitleLargeTextStyle = TextStyle(
   color: Colors.black,
 );
 
-// const kLiveChatEndpoint =
-//     "https://mandiri.3dolphins.ai:9443/webchat/livechat-livin.html?name=Reza&email=reza@gmail.com&triggerMenu=financial%20insight";
-
 const kBaseUrl = "https://mandiri.3dolphins.ai";
 const kLiveChatEndpoint =
     "https://mandiri.3dolphins.ai:9443/livechat-mandiri-livin/livechat-livin.html";
 
-const kGenerativeUrl = "https://mandiri.3dolphins.ai:7182";
-const kNonGenerativeUrl = "https://mandiri.3dolphins.ai:9443";
 var kBasicPredictPayload = {
   "language": "indonesia",
   "botId": "ded697626c68f892830a1f10317dee51",
@@ -62,3 +59,33 @@ var kBasicPredictPayload = {
     "retainHistoryFallback": false
   }
 };
+
+final kPredictPayload = PredictPayload(
+    botThinkConfig: BotThinkConfig(
+        confident: 0,
+        maxDocumentLimit: 0,
+        documentTokenLength: 0,
+        documentRelevancy: false,
+        processFlowRelevancy: false,
+        reRank: false,
+        maxDocumentRetryLimit: 0,
+        retainHistoryFallback: false),
+    owner: "",
+    botId: "",
+    botName: "",
+    persona: "",
+    sessionId: "",
+    language: "indonesia",
+    question: [],
+    dolphinLicense: "",
+    ticketNumber: "",
+    channelId: "",
+    channelType: "");
+
+final User kUser =
+    User(username: "api@inmotion.co.id", password: "admin@Dolphin123");
+// const String kBotId =
+//    "9514841cef481e0b76717efa7d9d5a59"; // Bella (beta.3dolphins.ai)
+const String kBotId =
+   "ded697626c68f892830a1f10317dee51"; // Mita (livin) (mandiri.3dolphins.ai)
+

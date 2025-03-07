@@ -1,30 +1,27 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
-import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dolphin_livin_demo/constant.dart';
 import 'package:dolphin_livin_demo/model/auth_token.dart';
 import 'package:dolphin_livin_demo/model/bot.dart';
 import 'package:dolphin_livin_demo/model/result.dart';
+import 'package:dolphin_livin_demo/services/base_service.dart';
 import 'package:dolphin_livin_demo/services/dolphin_dio.dart';
 import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 
-class DolphinApi  {
-  static const String kEndpointPredictUi =
-      "/dolphin/apiv1/generative/predict/ui";
-  static const String kEndpointPredictStream =
-      "/dolphin/apiv1/generative/predict/stream";
-  
-  static const String kEndpointSuggestion =
-      "/dolphin/apiv1/graph/workflow/b74092844998a190470ad5424697947d/WF/node-1731039934911/webhook";
+class DolphinApi extends BaseService {
+  static const String kEndpointPredictUi = "/predict/ui";
+  static const String kEndpointPredictStream = "/predict/stream";
 
-        static final DolphinLogger dolphinLogger = DolphinLogger.instance;
+  static const String kEndpointSuggestion =
+      "/workflow/b74092844998a190470ad5424697947d/WF/node-1731039934911/webhook";
+
+  static final DolphinLogger dolphinLogger = DolphinLogger.instance;
   static final DolphinDio _httpClient = DolphinDio.instance;
 
   DolphinApi._privateConstructor();
-  
+
   static final DolphinApi instance = DolphinApi._privateConstructor();
 
   static const int kPortNonGenerative = 9443;
@@ -36,35 +33,9 @@ class DolphinApi  {
   static const String kEndpointAuthRefreshToken = "/auth/refreshToken";
   static const String kEndpointBots = "/bots";
 
-  String _getNonGenerativeUrl(String endpoint) =>
-      "$kBaseUrl:$kPortNonGenerative$kEndpointNonGenerative$endpoint";
-      
-  String _getGenerativeUrl(String endpoint) =>
-      "$kBaseUrl:$kPortGenerative$kEndpointGenerative$endpoint";
-
-  String generateRandomString() {
-    // Get the current date and time
-    DateTime now = DateTime.now();
-
-    // Format date and time into a string
-    String dateTimeString = now.toIso8601String();
-
-    // Generate a random integer to add more randomness
-    int randomInt = Random().nextInt(10000);
-
-    // Combine date, time, and random integer
-    String combinedString = '$dateTimeString$randomInt';
-
-    // Hash the combined string using SHA256 for a 32-character result
-    String hashString = sha256.convert(utf8.encode(combinedString)).toString();
-
-    // Take the first 32 characters to match the example format
-    return hashString.substring(0, 32); // Adjust length as needed
-  }
-
   Future<Result?> getResult(String question) async {
     try {
-      var url = kGenerativeUrl + kEndpointPredictUi;
+      var url = getGenerativeUrl(kEndpointPredictUi);
       var questionPayload = {
         "question": [question]
       };
@@ -91,7 +62,7 @@ class DolphinApi  {
 
   Future<List<String>> getSuggestions() async {
     try {
-      var url = kNonGenerativeUrl + kEndpointSuggestion;
+      var url = getNonGenerativeUrl(kEndpointSuggestion);
       var response = await _httpClient.post(url);
       dolphinLogger.i(response.data);
 
@@ -130,7 +101,7 @@ class DolphinApi  {
     try {
       Dio dio = Dio();
 
-      var url = kNonGenerativeUrl + kEndpointSuggestion;
+      var url = getNonGenerativeUrl(kEndpointSuggestion);
       var response = await dio.post(url);
       dolphinLogger.i(response.data);
 
@@ -198,7 +169,7 @@ class DolphinApi  {
 
     _httpClient
         .post(
-      kGenerativeUrl + kEndpointPredictStream,
+      getGenerativeUrl(kEndpointPredictStream),
       data: payload,
       responseType: ResponseType.stream,
     )
@@ -235,35 +206,68 @@ class DolphinApi  {
     return controller.stream;
   }
 
-  Future<AuthToken> fetchAuthToken(
-      {required String username, required String password}) async {
-    var result = AuthToken();
-
+  /// Fetches the authentication token for a user.
+  ///
+  /// Sends a POST request with the provided [username] and [password]
+  /// to the authentication endpoint. If successful, returns an [AuthToken].
+  ///
+  /// Returns `null` if an error occurs or the response data is null.
+  Future<AuthToken?> fetchAuthToken(
+    String username,
+    String password,
+  ) async {
     try {
       var data = {
         "username": username,
         "password": password,
       };
-
-      var response = await _httpClient.post(_getNonGenerativeUrl(kEndpontAuth),
-          data: data);
+      var response = await _httpClient.post(
+        getNonGenerativeUrl(kEndpontAuth),
+        data: data,
+      );
 
       if (response.data != null) {
-        result = AuthToken.fromJson(response.data);
+        return AuthToken.fromJson(response.data);
+      } else {
+        throw Exception("response data is null");
       }
     } catch (e, stackTrace) {
       dolphinLogger.e(e, stackTrace: stackTrace);
     }
 
-    return result;
+    return null;
   }
 
+  /// Fetches the authentication token for a user.
+  ///
+  /// Sends a POST request with the provided [token] as authorization header
+  /// to the authentication endpoint. If successful, returns an [AuthToken].
+  ///
+  /// Returns `null` if an error occurs or the response data is null.
+  Future<AuthToken?> fetchAuthTokenByToken(String token) async {
+    try {
+      var response = await _httpClient.post(
+        getNonGenerativeUrl(kEndpointAuthRefreshToken),
+        token: token,
+      );
 
+      if (response.data != null) {
+        return AuthToken.fromJson(response.data);
+      } else {
+        throw Exception("response data is null");
+      }
+    } catch (e, stackTrace) {
+      dolphinLogger.e(e, stackTrace: stackTrace);
+    }
 
-  Future<List<Bot>> fetchBotList(
-      {String? botId, required String token, int start = 0, int count = 10}) async {
-    List<Bot> result = [];
+    return null;
+  }
 
+  Future<Bot?> fetchBot(
+      {String? botId,
+      required String token,
+      int start = 0,
+      int count = 10}) async {
     try {
       var queryParameters = {
         if (botId != null) "botId": botId,
@@ -271,20 +275,14 @@ class DolphinApi  {
         "count": count,
       };
 
-
-      var response = await _httpClient.get(_getNonGenerativeUrl(kEndpointBots),
+      var response = await _httpClient.get(getNonGenerativeUrl(kEndpointBots),
           queryParameters: queryParameters, token: token);
 
-      if (response.data != null && response.data is List) {
-        result = (response.data as List)
-            .map((e) => Bot.fromJson(e as Map<String, dynamic>))
-            .toList();
-      }
+      return Bot.fromJson(response.data['data']);
     } catch (e, stackTrace) {
       dolphinLogger.e(e, stackTrace: stackTrace);
     }
 
-    return result;
+    return null;
   }
-
 }
