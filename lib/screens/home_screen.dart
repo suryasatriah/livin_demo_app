@@ -1,5 +1,4 @@
 import 'package:dolphin_livin_demo/constant.dart';
-import 'package:dolphin_livin_demo/screens/inapp_web_view.dart';
 import 'package:dolphin_livin_demo/screens/web_view_screen.dart';
 import 'package:dolphin_livin_demo/widgets/explorer/explorer_view.dart';
 import 'package:dolphin_livin_demo/widgets/image_button.dart';

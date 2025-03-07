@@ -39,7 +39,7 @@ class _ExplorerViewState extends State<ExplorerView>
   @override
   void initState() {
     super.initState();
-    PermissionHandler().listenForPermissions();
+    PermissionHandler().listenForPermissionMicrophone();
     focusNode = FocusNode();
     controller = TextEditingController();
     init();

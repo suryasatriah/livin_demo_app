@@ -1,5 +1,6 @@
 import 'package:dolphin_livin_demo/constant.dart';
-import 'package:dolphin_livin_demo/screens/home_screen.dart';
+import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_provider.dart';
+import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_view.dart';
 import 'package:dolphin_livin_demo/screens/pln/pln_pra_screen.dart';
 import 'package:dolphin_livin_demo/screens/sukha_screen.dart';
 import 'package:dolphin_livin_demo/screens/transfer/transfer_amt_view.dart';
@@ -25,7 +26,7 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (_, __) => const HomeScreen(),
+      builder: (_, __) => const VoiceBotView(),
       routes: [
         GoRoute(
           path: 'sukha',
@@ -35,8 +36,7 @@ final router = GoRouter(
           path: 'transfer',
           builder: (context, state) => TransferAmtView(
             amount: state.uri.queryParameters['amt'] ?? "0",
-            destination:
-                state.uri.queryParameters['dest'] ?? "10024520240810",
+            destination: state.uri.queryParameters['dest'] ?? "10024520240810",
             destinationName:
                 state.uri.queryParameters['name'] ?? "Andriansyah Hakim",
           ),
@@ -63,11 +63,13 @@ class DolphinLivinDemo extends StatelessWidget {
           create: (_) => ExplorerProvider()),
       ChangeNotifierProvider<ExplorerAnswerGeneratorProvider>(
           create: (_) => ExplorerAnswerGeneratorProvider()),
+      ChangeNotifierProvider<VoiceBotProvider>(
+          create: (_) => VoiceBotProvider()),
     ];
   }
 
-  // Create ThemeData
-  _createTheme(BuildContext context) {
+      // Create ThemeData
+      _createTheme(BuildContext context) {
     return ThemeData().copyWith(
         scaffoldBackgroundColor: Colors.white,
         textTheme:

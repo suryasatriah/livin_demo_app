@@ -33,6 +33,12 @@ dependencies:
   permission_handler: ^11.3.1
   speech_to_text: ^7.0.0
   flutter_inappwebview: ^6.1.5
+  flutter_gen_runner:
+  just_audio: ^0.9.46
+  audioplayers: ^6.2.0
+  path_provider: ^2.1.5
+  flutter_sound: ^9.23.1
+  ffmpeg_kit_flutter_full_gpl: ^6.0.3
 
 dev_dependencies:
   flutter_test:
@@ -43,13 +49,25 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/icons/
     - assets/images/
     - assets/images/home/
     - assets/images/transfer/
     - google_fonts/
 
 flutter_launcher_icons:
-  image_path: "assets/images/ic_livin.png"
+  image_path: "assets/imdaages/ic_livin.png"
   android: "launcher_icon"
   ios: true
   remove_alpha_ios: true
+
+flutter_gen:
+  output: lib/gen/ # Optional (default: lib/gen/)
+  line_length: 80 # Optional (default: 80)
+
+  # Optional
+  integrations:
+    image: true
+    flutter_svg: true
+    rive: true
+    lottie: true

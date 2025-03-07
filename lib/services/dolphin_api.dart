@@ -5,28 +5,42 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dolphin_livin_demo/constant.dart';
+import 'package:dolphin_livin_demo/model/auth_token.dart';
+import 'package:dolphin_livin_demo/model/bot.dart';
 import 'package:dolphin_livin_demo/model/result.dart';
 import 'package:dolphin_livin_demo/services/dolphin_dio.dart';
 import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 
-class DolphinApi {
+class DolphinApi  {
   static const String kEndpointPredictUi =
       "/dolphin/apiv1/generative/predict/ui";
   static const String kEndpointPredictStream =
       "/dolphin/apiv1/generative/predict/stream";
+  
   static const String kEndpointSuggestion =
       "/dolphin/apiv1/graph/workflow/b74092844998a190470ad5424697947d/WF/node-1731039934911/webhook";
 
-  static final DolphinLogger dolphinLogger = DolphinLogger.instance;
-  static final DolphinDio dolphinDio = DolphinDio.instance;
-
-  static final DolphinApi instance = DolphinApi._privateConstructor();
+        static final DolphinLogger dolphinLogger = DolphinLogger.instance;
+  static final DolphinDio _httpClient = DolphinDio.instance;
 
   DolphinApi._privateConstructor();
+  
+  static final DolphinApi instance = DolphinApi._privateConstructor();
 
-  // Generate Url using port
-  generateUrl({required int port, String? endpoint}) =>
-      "$kBaseUrl:$port$endpoint";
+  static const int kPortNonGenerative = 9443;
+  static const int kPortGenerative = 7182;
+
+  static const String kEndpointNonGenerative = "/dolphin/apiv1/graph";
+  static const String kEndpointGenerative = "/dolphin/apiv1/generative";
+  static const String kEndpontAuth = "/auth";
+  static const String kEndpointAuthRefreshToken = "/auth/refreshToken";
+  static const String kEndpointBots = "/bots";
+
+  String _getNonGenerativeUrl(String endpoint) =>
+      "$kBaseUrl:$kPortNonGenerative$kEndpointNonGenerative$endpoint";
+      
+  String _getGenerativeUrl(String endpoint) =>
+      "$kBaseUrl:$kPortGenerative$kEndpointGenerative$endpoint";
 
   String generateRandomString() {
     // Get the current date and time
@@ -64,7 +78,7 @@ class DolphinApi {
 
       dolphinLogger.i(payload);
 
-      var response = await dolphinDio.post(url, data: payload);
+      var response = await _httpClient.post(url, data: payload);
       dolphinLogger.i(response.data);
 
       return Result.fromJson(
@@ -78,7 +92,7 @@ class DolphinApi {
   Future<List<String>> getSuggestions() async {
     try {
       var url = kNonGenerativeUrl + kEndpointSuggestion;
-      var response = await dolphinDio.post(url);
+      var response = await _httpClient.post(url);
       dolphinLogger.i(response.data);
 
       // Ensure response data is parsed as JSON if it’s a string
@@ -153,7 +167,7 @@ class DolphinApi {
 
   Future<void> sendLogEvent(String log) async {
     try {
-      await dolphinDio
+      await _httpClient
           .post("http://mandiri.3dolphins.ai:19000/log", data: {'log': log});
     } catch (e, stack) {
       dolphinLogger.e(e, stackTrace: stack);
@@ -182,7 +196,7 @@ class DolphinApi {
       ..addAll(generatedPayload);
     dolphinLogger.i(payload);
 
-    dolphinDio
+    _httpClient
         .post(
       kGenerativeUrl + kEndpointPredictStream,
       data: payload,
@@ -220,4 +234,55 @@ class DolphinApi {
 
     return controller.stream;
   }
+
+  Future<AuthToken> fetchAuthToken(
+      {required String username, required String password}) async {
+    var result = AuthToken();
+
+    try {
+      var data = {
+        "username": username,
+        "password": password,
+      };
+
+      var response = await _httpClient.post(_getNonGenerativeUrl(kEndpontAuth),
+          data: data);
+
+      if (response.data != null) {
+        result = AuthToken.fromJson(response.data);
+      }
+    } catch (e, stackTrace) {
+      dolphinLogger.e(e, stackTrace: stackTrace);
+    }
+
+    return result;
+  }
+
+
+  Future<List<Bot>> fetchBotList(
+      {String? botId, int start = 0, int count = 10}) async {
+    List<Bot> result = [];
+
+    try {
+      var queryParameters = {
+        if (botId != null) "botId": botId,
+        "start": start,
+        "count": count,
+      };
+
+      var response = await _httpClient.get(_getNonGenerativeUrl(kEndpointBots),
+          queryParameters: queryParameters);
+
+      if (response.data != null && response.data is List) {
+        result = (response.data as List)
+            .map((e) => Bot.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (e, stackTrace) {
+      dolphinLogger.e(e, stackTrace: stackTrace);
+    }
+
+    return result;
+  }
+
 }

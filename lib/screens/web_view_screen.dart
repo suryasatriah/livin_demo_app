@@ -30,7 +30,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
   @override
   void initState() {
     super.initState();
-    PermissionHandler().listenForPermissions();
+    PermissionHandler().listenForPermissionMicrophone();
     initController();
   }
 
