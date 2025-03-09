@@ -26,6 +26,12 @@ class _VoiceBotViewState extends State<VoiceBotView>
   }
 
   @override
+  void dispose() {
+    _voiceBotProvider.onDisposeSession();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     String getButtonText(VoiceBotStatus voiceBotStatus) {
       return switch (voiceBotStatus) {
@@ -33,7 +39,7 @@ class _VoiceBotViewState extends State<VoiceBotView>
         VoiceBotStatus.idling => "Tap to Speak",
         VoiceBotStatus.listening => "Listening...",
         VoiceBotStatus.speaking => "Speaking...",
-        VoiceBotStatus.fail => "Sorry, we didn't catch that one.."
+        VoiceBotStatus.fail => "Sorry, we didn't catch that one..."
       };
     }
 

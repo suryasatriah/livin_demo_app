@@ -89,3 +89,5 @@ final User kUser =
 const String kBotId =
    "ded697626c68f892830a1f10317dee51"; // Mita (livin) (mandiri.3dolphins.ai)
 
+const String kLicense = "mandiri";
+

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dolphin_livin_demo/constant.dart';
 import 'package:dolphin_livin_demo/core/core_notifier.dart';
 import 'package:dolphin_livin_demo/core/permission_handler.dart';
 import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_audio_converter.dart';
@@ -29,6 +30,7 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
   GenerativeService generativeService = GenerativeService();
 
   CoreNotifier? coreNotifier;
+  Stream<Uint8List>? audioStream;
 
   VoiceBotProvider({this.coreNotifier});
 
@@ -37,7 +39,10 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
   /// recognition plugin
   void initSpeech() async {
     PermissionHandler.listenForPermission(Permission.microphone);
-    speechEnabled = await speechToText.initialize();
+    speechEnabled = await speechToText.initialize(
+        onStatus: (status) => {
+              if (status == SpeechToText.doneStatus) {stopListen()},
+            });
     _log.d("Speech enabled : $speechEnabled");
     sessionId = generateRandomString();
     ticketNumber = generateRandomString();
@@ -89,7 +94,7 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
   }
 
   void cancelListen() async {
-    await speechToText.stop();
+    await speechToText.cancel();
     _log.d("cancel listening speech");
     speechText = "";
     changeVoiceBotStatus(VoiceBotStatus.idling);
@@ -172,12 +177,12 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
 
       if (cacheDir.existsSync()) {
         cacheDir.deleteSync(recursive: true);
-        print("Cache cleared successfully.");
+        _log.d("Cache cleared successfully.");
       } else {
-        print("No cache directory found.");
+        _log.d("No cache directory found.");
       }
     } catch (e) {
-      print("Error clearing cache: $e");
+      _log.d("Error clearing cache: $e");
     }
   }
 
@@ -220,7 +225,7 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
           sessionId: sessionId,
           language: "indonesia",
           question: [question],
-          dolphinLicense: "mandiri",
+          dolphinLicense: kLicense,
           ticketNumber: ticketNumber,
           channelId: "EMULATOR",
           channelType: "EMULATOR");
@@ -230,5 +235,9 @@ class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
     }
 
     return null;
+  }
+
+  void onDisposeSession() async {
+    await speechToText.cancel();
   }
 }
