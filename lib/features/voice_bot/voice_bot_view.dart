@@ -1,4 +1,3 @@
-import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_audio_converter.dart';
 import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_provider.dart';
 import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_status.dart';
 import 'package:dolphin_livin_demo/gen/assets.gen.dart';
@@ -14,20 +13,19 @@ class VoiceBotView extends StatefulWidget {
   State<VoiceBotView> createState() => _VoiceBotViewState();
 }
 
-class _VoiceBotViewState extends State<VoiceBotView>
-    with VoiceBotAudioConverter {
+class _VoiceBotViewState extends State<VoiceBotView> {
   late VoiceBotProvider _voiceBotProvider;
 
   @override
   void initState() {
     super.initState();
     _voiceBotProvider = Provider.of<VoiceBotProvider>(context, listen: false);
-    _voiceBotProvider.initSpeech();
+    _voiceBotProvider.initSession();
   }
 
   @override
   void dispose() {
-    _voiceBotProvider.onDisposeSession();
+    _voiceBotProvider.closeSession();
     super.dispose();
   }
 
@@ -94,7 +92,7 @@ class _VoiceBotViewState extends State<VoiceBotView>
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 16.r),
+                      padding: EdgeInsets.symmetric(vertical: 16.r),
                       child: RawMaterialButton(
                         onPressed: switch (provider.voiceBotStatus) {
                           VoiceBotStatus.idling => provider.startListen,
@@ -121,6 +119,12 @@ class _VoiceBotViewState extends State<VoiceBotView>
                         ),
                       ),
                     ),
+                    provider.voiceBotStatus != VoiceBotStatus.speaking
+                        ? const SizedBox.shrink()
+                        : Text(
+                            "Talk to interrupt",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
                   ],
                 ),
               ),

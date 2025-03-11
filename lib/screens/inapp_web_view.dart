@@ -74,9 +74,9 @@ class _InAppWebViewScreenState extends State<InAppWebViewScreen> {
     };
 
     if (consoleMessage.messageLevel != ConsoleMessageLevel.ERROR) {
-      DolphinLogger.instance.d("Console Message: ${logEvent.toString()}");
+      LoggerService.instance.d("Console Message: ${logEvent.toString()}");
     } else {
-      DolphinLogger.instance.e("Console Message: ${logEvent.toString()}");
+      LoggerService.instance.e("Console Message: ${logEvent.toString()}");
       DolphinApi.instance.sendLogEvent(logEvent.toString());
     }
   }

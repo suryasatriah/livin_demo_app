@@ -14,13 +14,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text/speech_to_text_provider.dart';
 
 void main() {
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('google_fonts/OFL.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  runApp(const DolphinLivinDemo());
+  runApp(DolphinLivinDemo());
 }
 
 final router = GoRouter(
@@ -55,22 +57,32 @@ final router = GoRouter(
 );
 
 class DolphinLivinDemo extends StatelessWidget {
-  const DolphinLivinDemo({super.key});
+  final SpeechToText speechToText = SpeechToText();
+
+  DolphinLivinDemo({super.key});
 
   // Create Providers
   _createProviders() {
     return [
-      ChangeNotifierProvider<CoreNotifier>(
-        create: (_) => CoreNotifier(user: kUser, botId: kBotId),
+      ChangeNotifierProvider<CoreProvider>(
+        create: (_) => CoreProvider(user: kUser, botId: kBotId),
       ),
       ChangeNotifierProvider<ExplorerProvider>(
           create: (_) => ExplorerProvider()),
       ChangeNotifierProvider<ExplorerAnswerGeneratorProvider>(
           create: (_) => ExplorerAnswerGeneratorProvider()),
-      ChangeNotifierProxyProvider<CoreNotifier, VoiceBotProvider>(
+      ChangeNotifierProvider<SpeechToTextProvider>(
+        create: (_) => SpeechToTextProvider(speechToText),
+      ),
+      ChangeNotifierProxyProvider2<CoreProvider, SpeechToTextProvider,
+          VoiceBotProvider>(
         create: (_) => VoiceBotProvider(),
-        update: (_, coreNotifier, voiceBotProvider) {
-          voiceBotProvider!.coreNotifier = coreNotifier;
+        update: (_, coreProvider, speechToTextProvider, voiceBotProvider) {
+          voiceBotProvider ??= VoiceBotProvider();
+
+          voiceBotProvider.coreProvider = coreProvider;
+          voiceBotProvider.speechToTextProvider = speechToTextProvider;
+
           return voiceBotProvider;
         },
       ),

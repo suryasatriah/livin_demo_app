@@ -35,7 +35,7 @@ const kTitleLargeTextStyle = TextStyle(
   color: Colors.black,
 );
 
-const kBaseUrl = "https://mandiri.3dolphins.ai";
+const kBaseUrl = "https://beta.3dolphins.ai";
 const kLiveChatEndpoint =
     "https://mandiri.3dolphins.ai:9443/livechat-mandiri-livin/livechat-livin.html";
 
@@ -84,10 +84,12 @@ final kPredictPayload = PredictPayload(
 
 final User kUser =
     User(username: "api@inmotion.co.id", password: "admin@Dolphin123");
-// const String kBotId =
-//    "9514841cef481e0b76717efa7d9d5a59"; // Bella (beta.3dolphins.ai)
 const String kBotId =
-   "ded697626c68f892830a1f10317dee51"; // Mita (livin) (mandiri.3dolphins.ai)
+   "9514841cef481e0b76717efa7d9d5a59"; // Bella (beta.3dolphins.ai)
+// const String kBotId =
+//    "ded697626c68f892830a1f10317dee51"; // Mita (livin) (mandiri.3dolphins.ai)
 
-const String kLicense = "mandiri";
+// const String kBotId =
+//     "b4e39f8f75940939dd6d95f84718cfd7"; // (1400) (mandiri.3dolphins.ai)
 
+const String kLicense = "beta";

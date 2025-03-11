@@ -17,7 +17,7 @@ class DolphinApi extends BaseService {
   static const String kEndpointSuggestion =
       "/workflow/b74092844998a190470ad5424697947d/WF/node-1731039934911/webhook";
 
-  static final DolphinLogger dolphinLogger = DolphinLogger.instance;
+  static final LoggerService dolphinLogger = LoggerService.instance;
   static final DolphinDio _httpClient = DolphinDio.instance;
 
   DolphinApi._privateConstructor();

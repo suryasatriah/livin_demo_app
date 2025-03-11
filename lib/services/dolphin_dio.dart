@@ -5,7 +5,7 @@ import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 
 class DolphinDio {
   static final DolphinDio instance = DolphinDio._privateConstructor();
-  static final dolphinLogger = DolphinLogger.instance;
+  static final dolphinLogger = LoggerService.instance;
   static final _baseOptions = BaseOptions(
     connectTimeout: const Duration(minutes: 1),
     receiveTimeout: const Duration(minutes: 1),

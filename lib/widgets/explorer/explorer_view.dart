@@ -30,7 +30,7 @@ class _ExplorerViewState extends State<ExplorerView>
 
   late ExplorerProvider explorerProviderWidget;
 
-  final DolphinLogger dolphinLogger = DolphinLogger.instance;
+  final LoggerService dolphinLogger = LoggerService.instance;
   bool submitted = false;
   Result? answer;
   String? link;
@@ -39,7 +39,7 @@ class _ExplorerViewState extends State<ExplorerView>
   @override
   void initState() {
     super.initState();
-    PermissionHandler().listenForPermissionMicrophone();
+    PermissionHandler.listenForPermissionMicrophone();
     focusNode = FocusNode();
     controller = TextEditingController();
     init();

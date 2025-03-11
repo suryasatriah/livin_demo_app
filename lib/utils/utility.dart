@@ -1,20 +1,20 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
-import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 
-mixin VoiceBotAudioConverter {
-  Future<String?> convertMuLawToWav(String inputPath) async {
-    final dir = await getTemporaryDirectory();
-    final outputPath = '${dir.path}/converted_voice_bot_audio.wav';
-    await FFmpegKit.execute('-f mulaw -ar 8000 -i $inputPath $outputPath');
-    return File(outputPath).existsSync() ? outputPath : null;
+class Utility {
+  static String decodeUtf8(String input) {
+    try {
+      return utf8.decode(input.codeUnits);
+    } catch (e, stack) {
+      LoggerService.instance.e(e, stackTrace: stack);
+    }
+    return input;
   }
 
-  String generateRandomString() {
+  static String generateRandomString() {
     // Get the current date and time
     DateTime now = DateTime.now();
     // Format date and time into a string
@@ -28,4 +28,6 @@ mixin VoiceBotAudioConverter {
     // Take the first 32 characters to match the example format
     return hashString.substring(0, 32); // Adjust length as needed
   }
+
+
 }

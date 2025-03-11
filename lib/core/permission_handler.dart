@@ -2,11 +2,11 @@ import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionHandler {
-  static final DolphinLogger _log = DolphinLogger.instance;
+  static final LoggerService _log = LoggerService.instance;
 
 
-  void listenForPermissionMicrophone() async {
-    listenForPermission(Permission.microphone);
+  static Future<void> listenForPermissionMicrophone() async {
+    await listenForPermission(Permission.microphone);
   }
 
   static Future<void> listenForPermission(Permission permission) async {

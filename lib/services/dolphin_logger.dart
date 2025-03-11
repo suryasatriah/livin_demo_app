@@ -1,10 +1,10 @@
 import 'package:dolphin_livin_demo/services/dolphin_api.dart';
 import 'package:logger/logger.dart';
 
-class DolphinLogger extends Logger {
-  static final DolphinLogger instance = DolphinLogger._privateConstructor();
+class LoggerService extends Logger {
+  static final LoggerService instance = LoggerService._privateConstructor();
 
-  DolphinLogger._privateConstructor();
+  LoggerService._privateConstructor();
 
   @override
   void e(

@@ -42,7 +42,7 @@ class ExplorerProvider extends ChangeNotifier {
         return result!.title!;
       }
     } catch (e) {
-      DolphinLogger.instance.e(e);
+      LoggerService.instance.e(e);
     }
 
     return null;

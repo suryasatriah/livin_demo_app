@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<CoreNotifier>(context, listen: false).init();
+    Provider.of<CoreProvider>(context, listen: false).init();
   }
 
   void showFullScreenDialog(BuildContext context) {

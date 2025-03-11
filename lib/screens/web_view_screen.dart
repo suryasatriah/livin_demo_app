@@ -30,7 +30,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
   @override
   void initState() {
     super.initState();
-    PermissionHandler().listenForPermissionMicrophone();
+    PermissionHandler.listenForPermissionMicrophone();
     initController();
   }
 
@@ -81,12 +81,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
     
    
     if (consoleMessage.level == JavaScriptLogLevel.error) {
-      DolphinLogger.instance.e("onConsoleMessage() consoleMessage: ${logEvent.toString()}");
+      LoggerService.instance.e("onConsoleMessage() consoleMessage: ${logEvent.toString()}");
       DolphinApi.instance.sendLogEvent(
         logEvent.toString()
       );
     } else {
-       DolphinLogger.instance.d("onConsoleMessage() consoleMessage: ${logEvent.toString()}");
+       LoggerService.instance.d("onConsoleMessage() consoleMessage: ${logEvent.toString()}");
     }
   }
 

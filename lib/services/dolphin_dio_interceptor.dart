@@ -8,7 +8,7 @@ class DolphinDioInterceptor extends Interceptor {
   final int maxRetries;
   final int retryIntervalMs;
 
-  final DolphinLogger dolphinLogger = DolphinLogger.instance;
+  final LoggerService dolphinLogger = LoggerService.instance;
 
   DolphinDioInterceptor({
     required this.dio,

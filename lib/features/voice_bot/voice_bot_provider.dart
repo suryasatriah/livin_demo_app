@@ -1,243 +1,180 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:dolphin_livin_demo/constant.dart';
 import 'package:dolphin_livin_demo/core/core_notifier.dart';
 import 'package:dolphin_livin_demo/core/permission_handler.dart';
-import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_audio_converter.dart';
+import 'package:dolphin_livin_demo/features/voice_bot/pcm_sound_svc.dart';
 import 'package:dolphin_livin_demo/features/voice_bot/voice_bot_status.dart';
 import 'package:dolphin_livin_demo/model/predict_payload.dart';
 import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 import 'package:dolphin_livin_demo/services/generative_service.dart';
+import 'package:dolphin_livin_demo/utils/utility.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text/speech_recognition_event.dart';
+import 'package:speech_to_text/speech_to_text_provider.dart';
 
-class VoiceBotProvider extends ChangeNotifier with VoiceBotAudioConverter {
-  final DolphinLogger _log = DolphinLogger.instance;
-  final int _speechListenDuration = 30;
+class VoiceBotProvider extends ChangeNotifier {
+  final GenerativeService _generativeService = GenerativeService();
+  final LoggerService _loggerService = LoggerService.instance;
+  final int _speechListenDuration = 20;
   final String _speechLocaleId = "id_ID";
 
   VoiceBotStatus voiceBotStatus = VoiceBotStatus.idling;
-  bool speechEnabled = false;
+  PcmSoundSvc pcmSoundSvc = PcmSoundSvc();
+  StreamSubscription? audioStreamSubscription;
   String speechText = "";
   String sessionId = "";
   String ticketNumber = "";
-  SpeechToText speechToText = SpeechToText();
-  GenerativeService generativeService = GenerativeService();
+  int printCount = 0;
 
-  CoreNotifier? coreNotifier;
-  Stream<Uint8List>? audioStream;
+  late CoreProvider coreProvider;
+  late SpeechToTextProvider speechToTextProvider;
 
-  VoiceBotProvider({this.coreNotifier});
+  void initSession() async {
+    voiceBotStatus = VoiceBotStatus.idling;
+    sessionId = Utility.generateRandomString();
+    ticketNumber = Utility.generateRandomString();
 
-  /// Initialize speech recognition
-  /// Permission for microphone is needed to use speech
-  /// recognition plugin
-  void initSpeech() async {
-    PermissionHandler.listenForPermission(Permission.microphone);
-    speechEnabled = await speechToText.initialize(
-        onStatus: (status) => {
-              if (status == SpeechToText.doneStatus) {stopListen()},
-            });
-    _log.d("Speech enabled : $speechEnabled");
-    sessionId = generateRandomString();
-    ticketNumber = generateRandomString();
-    notifyListeners();
+    if (!speechToTextProvider.isAvailable) {
+      speechToTextProvider.initialize();
+    }
   }
 
-  /// Start speech recognition session
-  void startListen() async {
-    speechText = "";
-    await speechToText.listen(
-      onResult: _onResult,
+  void startListen() {
+    PermissionHandler.listenForPermissionMicrophone();
+    speechToTextProvider.listen(
       listenFor: Duration(seconds: _speechListenDuration),
       localeId: _speechLocaleId,
     );
-    _log.d("start listening speech");
+    _loggerService.d("start listening speech");
     changeVoiceBotStatus(VoiceBotStatus.listening);
+    speechToTextProvider.stream.listen(
+      (event) {
+        switch (event.eventType) {
+          case SpeechRecognitionEventType.doneEvent:
+            speechText = speechToTextProvider.lastResult?.recognizedWords ?? "";
+            if (speechText.isNotEmpty) _onSubmit();
+          default:
+            break;
+        }
+      },
+    );
+    _loggerService.d("stop listening speech");
   }
 
-  /// This is the callback that the SpeechToText plugin calls when
-  /// the platform returns recognized words.
-  void _onResult(SpeechRecognitionResult result) {
-    speechText = result.recognizedWords;
-  }
-
-  void processSpeechText() {
-    if (speechText.isNotEmpty) {
-      // TO DO process speech text
-    }
-  }
-
-  /// Manually stop the active speech recognition session
-  /// Note that there are also timeouts that each platform enforces
-  /// and the SpeechToText plugin supports setting timeouts on the
-  /// listen method.
-  void stopListen() async {
-    await speechToText.stop();
-    _log.d("stop listening speech");
-    _log.i("recognized speech: $speechText");
-    if (speechText.isNotEmpty) {
-      try {
-        processMulawStream(submitSpeech());
-      } catch (e) {
-        _log.e(e);
-        onFail();
-      }
-    } else {
-      onFail();
-    }
-  }
-
-  void cancelListen() async {
-    await speechToText.cancel();
-    _log.d("cancel listening speech");
-    speechText = "";
+  void stopListen() {
+    speechToTextProvider.stop();
+    _loggerService.d("stop listening speech");
     changeVoiceBotStatus(VoiceBotStatus.idling);
   }
 
-  /// Callback when failed retrieve speech
-  /// This method called when speechText is empty
-  void onFail() async {
+  void cancelListen() async {
+    speechToTextProvider.cancel();
+    speechText = "";
+    _loggerService.d("cancel listening speech");
+    changeVoiceBotStatus(VoiceBotStatus.idling);
+  }
+
+  void _onFail() async {
     changeVoiceBotStatus(VoiceBotStatus.fail);
     await Future.delayed(const Duration(seconds: 3));
     changeVoiceBotStatus(VoiceBotStatus.idling);
   }
 
-  Stream<Uint8List> submitSpeech() {
+  void _onSubmit() {
+    if (VoiceBotStatus.generating == voiceBotStatus) return;
+    changeVoiceBotStatus(VoiceBotStatus.generating);
+    try {
+      var audioStream = _getAudioStream();
+      processAudioStream(audioStream);
+    } catch (e) {
+      _loggerService.e("error submit and get answer stream: $e");
+      _onFail();
+    }
+  }
+
+  Stream<List<int>> _getAudioStream() {
     var data = createPredictPayload(speechText);
     if (data != null) {
-      return generativeService.fetchPredictAudio(data);
+      return _generativeService.fetchPredictAudioMp3(data);
     } else {
       throw Exception("data is not ready");
     }
   }
 
-  Future<void> processMulawStream(Stream<Uint8List> mulawStream) async {
+  Future<void> processAudioStream(Stream<List<int>> audioStream) async {
+    _loggerService.d("process audio speech");
     changeVoiceBotStatus(VoiceBotStatus.generating);
-    final List<Uint8List> audioChunks = [];
 
     try {
-      // Listen to the stream and collect data
-      await for (var chunk in mulawStream) {
-        audioChunks.add(chunk);
-      }
-    } catch (e) {
-      _log.e("Error processing Mu-law stream: $e");
-      onFail();
-      return;
-    }
-
-    // Convert the collected data into a Mu-law file
-    final tempFile = await _createTempMuLawFile(audioChunks);
-    if (tempFile != null) {
-      // Convert the Mu-law file to WAV
-      String? wavPath = await convertMuLawToWav(tempFile.path);
-      playAudio(wavPath);
+      await pcmSoundSvc.startPcmSound();
+      audioStreamSubscription = audioStream.listen(
+        (data) => pcmSoundSvc.pushPcmData(data),
+        onError: _onError,
+        onDone: _onDoneStream,
+      );
+    } catch (e, stackTrace) {
+      _loggerService.e("error process audio stream: $e",
+          stackTrace: stackTrace);
+      _onFail();
     }
   }
 
-  // Helper method to create a temporary Mu-law file from the stream data
-  Future<File?> _createTempMuLawFile(List<Uint8List> audioChunks) async {
-    final dir = await getTemporaryDirectory();
-    final tempFile = File('${dir.path}/voice_bot_audio.ulaw');
-
-    // Write the collected chunks to the temporary Mu-law file
-    await tempFile.writeAsBytes(audioChunks.expand((x) => x).toList());
-
-    // Return the created Mu-law file
-    return tempFile.existsSync() ? tempFile : null;
+  void _onError(Object e, StackTrace stackTrace) {
+    _loggerService.e("error in stream listening: $e");
+    _onFail();
   }
 
-  Future<void> playAudio(String? wavPath) async {
-    if (wavPath != null) {
-      changeVoiceBotStatus(VoiceBotStatus.speaking);
-      var audioPlayer = AudioPlayer();
-      try {
-        await audioPlayer.play(DeviceFileSource(wavPath));
-        // Wait for completion
-        await _waitForAudioCompletion(audioPlayer);
-      } catch (e) {
-        _log.e(e);
-      }
-      audioPlayer.dispose();
-      onFinish();
-    }
-
+  void _onDoneStream() {
+    _loggerService.d("done delivering audio");
     changeVoiceBotStatus(VoiceBotStatus.idling);
   }
 
-  Future<void> onFinish() async {
-    try {
-      final cacheDir = await getTemporaryDirectory();
-
-      if (cacheDir.existsSync()) {
-        cacheDir.deleteSync(recursive: true);
-        _log.d("Cache cleared successfully.");
-      } else {
-        _log.d("No cache directory found.");
-      }
-    } catch (e) {
-      _log.d("Error clearing cache: $e");
+  Future<void> onSpeak() async {
+    if (speechToTextProvider.isListening) {
+      speechToTextProvider.stop();
     }
-  }
-
-  Future<void> _waitForAudioCompletion(AudioPlayer audioPlayer) async {
-    final completer = Completer<void>();
-    void onComplete() {
-      if (!completer.isCompleted) {
-        completer.complete();
-      }
-    }
-
-    audioPlayer.onPlayerComplete.listen((_) => onComplete());
-    return completer.future;
   }
 
   /// Change voice bot status using VoiceBotStatus enum
   void changeVoiceBotStatus(VoiceBotStatus voiceBotStatus) {
     if (this.voiceBotStatus == voiceBotStatus) return;
     this.voiceBotStatus = voiceBotStatus;
+    if (kDebugMode) print("changed voice bot status: $voiceBotStatus");
     notifyListeners();
   }
 
   Map<String, dynamic>? createPredictPayload(String question) {
-    if (coreNotifier?.bot != null) {
-      var bot = coreNotifier!.bot;
-      var payload = PredictPayload(
-          botThinkConfig: BotThinkConfig(
-              confident: bot.confident,
-              maxDocumentLimit: bot.maxDocumentLimit,
-              documentTokenLength: bot.documentTokenLength,
-              documentRelevancy: bot.documentRelevancy,
-              processFlowRelevancy: bot.documentRelevancy,
-              reRank: bot.reRank,
-              maxDocumentRetryLimit: bot.maxDocumentRetryLimit,
-              retainHistoryFallback: bot.retainHistoryFallback),
-          owner: bot.owner,
-          botId: bot.id,
-          botName: bot.botName,
-          persona: bot.botPersona.first,
-          sessionId: sessionId,
-          language: "indonesia",
-          question: [question],
-          dolphinLicense: kLicense,
-          ticketNumber: ticketNumber,
-          channelId: "EMULATOR",
-          channelType: "EMULATOR");
-      var payloadJson = payload.toJson();
+    var bot = coreProvider.bot;
+    var payload = PredictPayload(
+        botThinkConfig: BotThinkConfig(
+            confident: bot.confident,
+            maxDocumentLimit: bot.maxDocumentLimit,
+            documentTokenLength: bot.documentTokenLength,
+            documentRelevancy: bot.documentRelevancy,
+            processFlowRelevancy: bot.documentRelevancy,
+            reRank: bot.reRank,
+            maxDocumentRetryLimit: bot.maxDocumentRetryLimit,
+            retainHistoryFallback: bot.retainHistoryFallback),
+        owner: bot.owner,
+        botId: bot.id,
+        botName: bot.botName,
+        persona: bot.botPersona.first,
+        sessionId: sessionId,
+        language: "indonesia",
+        question: [question],
+        dolphinLicense: kLicense,
+        ticketNumber: ticketNumber,
+        channelId: "audio_emulator",
+        channelType: "audio_emulator");
+    var payloadJson = payload.toJson();
 
-      return payloadJson;
-    }
-
-    return null;
+    return payloadJson;
   }
 
-  void onDisposeSession() async {
-    await speechToText.cancel();
+  void closeSession() {
+    pcmSoundSvc.closePcmSound();
+    audioStreamSubscription?.cancel();
+    audioStreamSubscription = null;
   }
 }

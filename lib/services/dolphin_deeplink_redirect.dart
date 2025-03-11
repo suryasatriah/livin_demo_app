@@ -10,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 mixin DolphinDeepLinkNavigator {
   static const String kEndpointPlnPra = "/plnpra";
-  static final DolphinLogger _dolphinLogger = DolphinLogger.instance;
+  static final LoggerService _dolphinLogger = LoggerService.instance;
 
   Future<void> navigateDeeplink(BuildContext context,
       {required String url}) async {

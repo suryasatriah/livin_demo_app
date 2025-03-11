@@ -6,17 +6,17 @@ import 'package:dolphin_livin_demo/services/dolphin_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class CoreNotifier extends ChangeNotifier {
+class CoreProvider extends ChangeNotifier {
   Bot bot = Bot();
   DolphinApi api = DolphinApi.instance;
 
   AuthToken authToken = AuthToken();
-  DolphinLogger logger = DolphinLogger.instance;
+  LoggerService logger = LoggerService.instance;
 
   late String botId;
   late User user;
 
-  CoreNotifier({
+  CoreProvider({
     required this.user,
     required this.botId,
   }) {
@@ -26,7 +26,6 @@ class CoreNotifier extends ChangeNotifier {
   Future<void> init() async {
     await _populateAuthToken();
     await _populateBot();
-    notifyListeners();
     logger.i("bot : $bot");
   }
 
